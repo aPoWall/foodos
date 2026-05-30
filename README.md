@@ -1,44 +1,35 @@
 # foodos
 
-Кухонный инструмент в эстетике **shaper** (B&W technical-manual / patent drawing). Превращает «что в руках» в phone-first трекер готовки с двумя дорожками — морская и растительная — общей базой и точкой разделения.
+Кухонная **система** в эстетике **shaper** (B&W technical-manual / patent drawing). Из «одного рецепта» выросла в систему: ввод любого блюда по вкусам → AI собирает трекер, библиотека блюд, камера-распознавание продуктов, растущая библиотека метафор.
 
-**Live:** https://foodos-lula-camarao.netlify.app · `fig.01` — *lula recheada com chouriço × camarão* (фаршированный кальмар + креветки, разморозка → стол).
+**Live:** https://foodos-lula-camarao.netlify.app
 
 ## Что умеет
 
-- **трекер шагов** — numbered shaper-блоки, инверсия = выполнено, прогресс, таймеры с зумером и вибрацией, сохранение в `localStorage`
-- **две дорожки** — `⊕ параллель / ◆ море / ◇ веган`, одна база → `⑃` точка разделения соуса
-- **камера-монитор** — `getUserMedia` (задняя камера телефона), B&W live preview
-- **chef · console** — советы по ходу готовки: текстовый совет по шагу + **«проверить камерой»** (кадр → vision-модель оценивает готовность)
-- **живая отрисовка ингредиентов** — впиши ингредиент → patent line-art рисуется на лету через OpenRouter (Nano Banana)
-- **голос** — `speechSynthesis` (ru-RU) читает шаги и советы
-- **принципы** — кулинарные аксиомы как shaper-readout
+- **ввод любого блюда** — опиши `{context}` («есть фарш и баклажаны, одному без мяса») → `compose.mjs` собирает структуру под твой **вкусовой профиль**: база → точка разделения → дорожки, шаги, таймеры, принципы
+- **библиотека блюд** — каждое блюдо = JSON-карточка; `cook.html?meal=slug` рендерит любое
+- **камера-распознавание** — `getUserMedia` → «распознать» рисует Shaper-боксы продуктов поверх видео (vision), «проверить готовность» оценивает сковороду. распознавание не даёт инструкций — только идентификация
+- **библиотека метафор** — впиши ингредиент → patent line-art (Nano Banana), копится и переиспользуется во всех блюдах
+- **две дорожки** — общая база → `⑃` точка разделения → ◆/◇ (море/веган, мясо/веган, …)
+- **трекер** — numbered shaper-блоки, инверсия = выполнено, таймеры с зумером/вибрацией, per-step «детальнее (ai)», голос (ru), всё в `localStorage`
 
 ## Архитектура
 
 ```
-index.html        каркас + svg-спрайт ингредиентов
-app.css           shaper-токены и компоненты
-app.js            движок шагов, камера, голос, таймеры, советы, draw
-netlify/functions
-  ├─ draw.mjs     OpenRouter image (Nano Banana) → ингредиент line-art
-  └─ advise.mjs   OpenRouter text/vision → советы по шагу / по фото
-netlify.toml      publish=. · functions=netlify/functions
+index.html  ХАБ (композер · библиотека · вкусы · метафоры)
+cook.html   generic ИНСТРУМЕНТ (?meal=slug)
+css/shaper.css · js/{store,cook,camera,voice,hub}.js
+data/meals/*.json (блюда=данные) · data/taste-profile.default.json
+netlify/functions/{draw,advise,compose,recognize}.mjs
 ```
 
-**Секреты:** `OPENROUTER_API_KEY` живёт ТОЛЬКО как Netlify env var. Браузер обращается к Netlify Function (same-origin прокси), ключ наружу не уходит и в git не попадает.
+Полная карта и runbook — [AGENTS.md](AGENTS.md).
 
-## Локально
-
-```bash
-netlify dev    # поднимает статику + функции, подхватывает OPENROUTER_API_KEY
-```
-Без функций (просто `index.html`) всё работает, кроме live-draw и AI-советов — они деградируют в подсказки.
+**Секреты:** `OPENROUTER_API_KEY` только в Netlify env; браузер ходит к Netlify Function (same-origin прокси), ключ не в репозитории.
 
 ## Деплой
 
-Push в `main` → GitHub Action (`.github/workflows/deploy.yml`) → `netlify deploy --prod`.
-Секреты репозитория: `NETLIFY_AUTH_TOKEN`, `NETLIFY_SITE_ID`. Env сайта: `OPENROUTER_API_KEY`.
+push `main` → GitHub Action → `netlify deploy --prod`. Секреты: `NETLIFY_AUTH_TOKEN`, `NETLIFY_SITE_ID` (репо) · `OPENROUTER_API_KEY` (сайт).
 
 ---
-generated with [Claude Code](https://claude.com/claude-code) · shaper aesthetic · foodos skill
+generated with [Claude Code](https://claude.com/claude-code) · shaper aesthetic · foodos system
