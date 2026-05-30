@@ -15,7 +15,8 @@ jobs:
       - name: install netlify cli
         run: npm i -g netlify-cli@23
       - name: deploy to netlify
-        run: netlify deploy --prod --dir=. --functions=netlify/functions
+        # publish dir + functions dir come from netlify.toml; passing --functions too errors in CI
+        run: netlify deploy --prod
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
