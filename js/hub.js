@@ -49,14 +49,34 @@ async function compose() {
   $("composeBtn").disabled = true;
   try {
     const taste = await S.getTaste();
+    out.innerHTML = `<span class="spin">◍</span> [1/3] читаю вкусы… [2/3] проектирую блюдо…`;
     const { meal } = await S.FN("compose", { context: ctx, taste });
     if (!meal || !meal.steps?.length) throw new Error("пустой ответ модели");
     S.saveUserMeal(meal);
+    await drawIngredientsProgressively(meal, out);
     out.innerHTML = `✓ собрано: <b>${S.esc(meal.title)}</b> — ${meal.steps.length} шагов. открываю…`;
-    setTimeout(() => location.href = `cook.html?meal=${encodeURIComponent(meal.slug)}`, 700);
+    setTimeout(() => location.href = `cook.html?meal=${encodeURIComponent(meal.slug)}`, 800);
   } catch (e) {
     out.innerHTML = `не вышло: ${S.esc(e.message)}<br><span style="font-size:11px">нужен онлайн + ключ openrouter на сайте</span>`;
     $("composeBtn").disabled = false;
+  }
+}
+
+/* progressively draw a meal's ingredient metaphors, showing each as it lands */
+async function drawIngredientsProgressively(meal, out) {
+  const ings = (meal.ingredients || []).map(i => (i.label || i.id || "").toLowerCase()).filter(Boolean);
+  if (!ings.length) return;
+  const lib = S.getMetaphors();
+  const cells = ings.map(n => `<span class="pcell" data-n="${S.esc(n)}" style="display:inline-flex;flex-direction:column;align-items:center;width:64px;margin:4px">
+    <span class="pbox" style="width:54px;height:54px;border:1px solid var(--soft);display:grid;place-items:center;font-size:18px;color:var(--muted)">${lib[n] ? `<img src="${lib[n]}" style="width:100%;height:100%;object-fit:contain;filter:grayscale(1)">` : "◌"}</span>
+    <span style="font-size:9px;color:var(--muted);margin-top:3px;max-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${S.esc(n)}</span></span>`).join("");
+  out.innerHTML = `<div style="font-size:11px;margin-bottom:6px">[3/3] рисую ингредиенты…</div><div style="display:flex;flex-wrap:wrap">${cells}</div>`;
+  for (const n of ings.slice(0, 6)) {
+    const cell = out.querySelector(`.pcell[data-n="${CSS.escape(n)}"] .pbox`);
+    if (lib[n]) continue;
+    if (cell) cell.innerHTML = `<span class="spin">◍</span>`;
+    try { const img = await S.drawMetaphor(n); if (cell) cell.innerHTML = `<img src="${img}" class="drawing" style="width:100%;height:100%;object-fit:contain;filter:grayscale(1)">`; }
+    catch { if (cell) cell.textContent = "✕"; }
   }
 }
 

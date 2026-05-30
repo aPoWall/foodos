@@ -234,3 +234,32 @@ footer.stamp .fig small{display:block;color:var(--muted);font-size:10px;margin-t
 .toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:var(--bg);
   font-size:12px;letter-spacing:.04em;padding:9px 16px;z-index:60;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90vw}
 .toast.show{opacity:1}
+
+/* ============================================================
+   FOCUS COOK MODE — one big step, hands-free at the stove
+   ============================================================ */
+.focus{position:fixed;inset:0;z-index:80;background:var(--bg);display:none;flex-direction:column;padding:18px}
+.focus.show{display:flex}
+.focus .fhead{display:flex;align-items:center;gap:12px;border-bottom:var(--frame) solid var(--ink);padding-bottom:12px}
+.focus .fhead .ft{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.focus .fhead .fexit{margin-left:auto}
+.focus .dots{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 0}
+.focus .dots .d{width:9px;height:9px;border:var(--frame) solid var(--ink);border-radius:50%}
+.focus .dots .d.done{background:var(--ink)}
+.focus .dots .d.cur{box-shadow:0 0 0 3px var(--hair)}
+.focus .stage{flex:1;display:flex;flex-direction:column;justify-content:center;gap:18px;padding:8px 2px;min-height:0;overflow:auto}
+.focus .stage .pn{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px}
+.focus .stage .bignum{font-size:13px;color:var(--muted)}
+.focus .stage .bigttl{font-size:14px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.focus .stage .biglead{font-size:clamp(22px,5.5vw,38px);line-height:1.22;font-weight:500;letter-spacing:-.01em}
+.focus .stage .bigtip{font-size:14px;color:var(--muted);border:var(--frame) solid var(--soft);padding:11px 13px;line-height:1.5;display:flex;gap:9px}
+.focus .stage .bigtip .m{color:var(--ink)}
+.focus .stage .bigexpand{font-size:15px;line-height:1.55;color:var(--muted);border-top:var(--frame) dashed var(--soft);padding-top:12px}
+.focus .ftimer{font-size:clamp(40px,16vw,120px);font-weight:600;letter-spacing:-.02em;line-height:1;text-align:center}
+.focus .ftimer.ring{animation:inv .6s steps(2) infinite}
+.focus .frail{display:flex;gap:8px;flex-wrap:wrap;padding-top:14px;border-top:var(--frame) solid var(--ink)}
+.focus .frail .chip{font-size:12px;padding:10px 14px}
+.focus .fnav{display:grid;grid-template-columns:auto 1fr;gap:10px;margin-top:10px}
+.focus .fnav .chip{justify-content:center;display:flex;font-size:14px;padding:14px}
+.focus .fnav .next{background:var(--ink);color:var(--bg);font-weight:600;letter-spacing:.08em}
+.focus .fnav .next:hover{opacity:.85}

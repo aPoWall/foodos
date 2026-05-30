@@ -153,13 +153,13 @@ function renderSeeds() {
 }
 
 /* per-step AI detail */
-async function expandStep(st, btn) {
-  if (expands[st.id]) { delete expands[st.id]; S.saveExpand(SLUG, st.id, ""); renderSteps(); return; }
+async function expandStep(st, btn, fromFocus) {
+  if (expands[st.id]) { delete expands[st.id]; S.saveExpand(SLUG, st.id, ""); renderSteps(); if (fromFocus) renderFocus(); return; }
   btn.textContent = "···"; btn.disabled = true;
   try {
     const ctx = `блюдо: ${meal.title}. шаг: ${st.ttl} — ${st.lead}. дай чуть больше деталей по ЭТОМУ шагу (как понять готовность, частые ошибки), 2-3 предложения.`;
     const { advice } = await S.FN("advise", { mode: "text", step: st.ttl, context: ctx });
-    expands[st.id] = advice; S.saveExpand(SLUG, st.id, advice); renderSteps();
+    expands[st.id] = advice; S.saveExpand(SLUG, st.id, advice); renderSteps(); if (fromFocus) renderFocus();
     if (voice.on) voice.say(advice);
   } catch (e) { btn.textContent = "не вышло"; btn.disabled = false; S.toast("ai недоступен: " + e.message); }
 }
@@ -176,6 +176,7 @@ function startTimer(id, sec) {
     timers[id].left--;
     if (timers[id].left <= 0) { clearInterval(timers[id].iv); timers[id].ring = true; beep(); if (navigator.vibrate) navigator.vibrate([300, 120, 300]); if (voice.on) voice.say(`таймер ${timers[id].title} — готово`); }
     drawDock();
+    if (focusOn) { const ft = $("fTimer"); if (ft && cookableSteps()[focusIndex()]?.id === id) { ft.textContent = timers[id].left > 0 ? fmt(timers[id].left) : "готово"; ft.classList.toggle("ring", !!timers[id].ring); } }
   }, 1000);
   drawDock();
 }
@@ -228,7 +229,61 @@ async function camRecognize() {
 }
 
 function syncVoice() { const el = $("voiceChip"); el.classList.toggle("on", voice.on); el.innerHTML = `voice · <span class="k">${voice.on ? "on" : "off"}</span>`; }
-function resetAll() { if (confirm("сбросить прогресс этого блюда?")) { done.clear(); S.saveProgress(SLUG, done); Object.keys(timers).forEach(stopTimer); renderSteps(); } }
+function resetAll() { if (confirm("сбросить прогресс этого блюда?")) { done.clear(); S.saveProgress(SLUG, done); Object.keys(timers).forEach(stopTimer); renderSteps(); if (focusOn) renderFocus(); } }
+
+/* ============================================================
+   FOCUS COOK MODE — one big step, hands-free
+   ============================================================ */
+let focusOn = false;
+function cookableSteps() { return (meal.steps || []).filter(s => s.t !== "split" && visible(s.t)); }
+function enterFocus() {
+  focusOn = true; $("focus").classList.add("show");
+  document.body.style.overflow = "hidden";
+  $("focusChip").classList.add("on");
+  if (!voice.on) { voice.set(true); syncVoice(); }
+  renderFocus();
+}
+function exitFocus() { focusOn = false; $("focus").classList.remove("show"); document.body.style.overflow = ""; $("focusChip").classList.remove("on"); markCurrent(); }
+function focusIndex() {
+  const list = cookableSteps();
+  const cur = list.findIndex(s => !done.has(s.id));
+  return cur === -1 ? list.length - 1 : cur;
+}
+function renderFocus() {
+  const list = cookableSteps(); if (!list.length) return;
+  const i = focusIndex(); const st = list[i];
+  $("fcrumb").textContent = `готовка · ${i + 1}/${list.length}${meal.tracks ? " · " + (track === "both" ? "обе дорожки" : phaseName(track)) : ""}`;
+  $("fdots").innerHTML = list.map((s, n) => `<span class="d ${done.has(s.id) ? "done" : ""} ${n === i ? "cur" : ""}"></span>`).join("");
+  const ex = expands[st.id]; const tm = timers[st.id];
+  $("fstage").innerHTML = `
+    <div class="pn"><span class="bignum">${phaseGlyph(st.t)} ${i + 1}/${list.length}</span> · <span class="bigttl">${S.esc(st.ttl || "")}</span></div>
+    <div class="biglead">${S.esc(st.lead || "")}</div>
+    ${st.tip ? `<div class="bigtip"><span class="m">⚑</span><span>${S.esc(st.tip)}</span></div>` : ""}
+    ${st.time ? `<div class="ftimer${tm && tm.ring ? " ring" : ""}" id="fTimer">${tm ? fmt(tm.left) : fmt(st.time)}</div>` : ""}
+    ${ex ? `<div class="bigexpand">${S.esc(ex)}</div>` : ""}
+    <div class="frail">
+      ${st.time ? `<button class="chip" id="fTimerBtn">${tm ? "⏸ стоп" : "▶ таймер " + fmt(st.time)}</button>` : ""}
+      <button class="chip" id="fSay">◂ озвучить</button>
+      <button class="chip" id="fExpand">＋ детальнее (ai)</button>
+    </div>`;
+  const tb = $("fTimerBtn"); if (tb) tb.onclick = () => { tm ? stopTimer(st.id) : startTimer(st.id, st.time); renderFocus(); };
+  $("fSay").onclick = () => sayStep(st);
+  $("fExpand").onclick = (e) => expandStep(st, e.target, true);
+  if (voice.on) voice.say(stripTtl(st));
+}
+function focusNext() {
+  const list = cookableSteps(); const i = focusIndex(); const st = list[i];
+  done.add(st.id); S.saveProgress(SLUG, done);
+  const el = document.querySelector(`.step[data-id="${st.id}"]`); if (el) { el.classList.add("done"); const b = el.querySelector('[data-act=toggle]'); if (b) b.textContent = "✓ готово"; }
+  updateProgress();
+  if (done.size >= list.length || i >= list.length - 1) { exitFocus(); S.toast("готово — приятного аппетита ◎"); return; }
+  renderFocus();
+}
+function focusPrev() {
+  const list = cookableSteps(); const i = focusIndex();
+  for (let k = i - 1; k >= 0; k--) { if (done.has(list[k].id)) { done.delete(list[k].id); S.saveProgress(SLUG, done); break; } }
+  updateProgress(); renderSteps(); renderFocus();
+}
 
 function wire() {
   $("voiceChip").onclick = () => { voice.toggle(); syncVoice(); if (voice.on) { const s = currentStep(); if (s) voice.say(stripTtl(s)); } };
@@ -242,6 +297,16 @@ function wire() {
   $("drawBtn").onclick = drawIngredient;
   $("drawInput").addEventListener("keydown", e => { if (e.key === "Enter") drawIngredient(); });
   $("resetBtn").onclick = resetAll;
+  $("focusChip").onclick = () => focusOn ? exitFocus() : enterFocus();
+  $("fExit").onclick = exitFocus;
+  $("fNext").onclick = focusNext;
+  $("fPrev").onclick = focusPrev;
+  document.addEventListener("keydown", e => {
+    if (!focusOn) return;
+    if (e.key === "Escape") exitFocus();
+    else if (e.key === "ArrowRight" || e.key === " ") { e.preventDefault(); focusNext(); }
+    else if (e.key === "ArrowLeft") focusPrev();
+  });
   const d = document.documentElement.classList.contains("dark");
   $("themeChip").innerHTML = `theme · <span class="k">${d ? "dark" : "light"}</span>`;
 }

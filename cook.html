@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/shaper.css?v=3">
+<link rel="stylesheet" href="css/shaper.css?v=4">
 </head>
 <body>
 
@@ -47,6 +47,7 @@
     <div class="brand"><a href="index.html"><span class="dot"></span>foodos</a></div>
     <div class="crumb" id="crumb">fig.··</div>
     <div class="ctl">
+      <button class="chip on" id="focusChip">▶ готовка</button>
       <button class="chip" id="voiceChip">voice · <span class="k">off</span></button>
       <button class="chip" id="camChip">cam · <span class="k">off</span></button>
       <button class="chip" id="themeChip">theme · <span class="k">light</span></button>
@@ -128,6 +129,21 @@
 </div>
 
 <div class="dock" id="dock"></div>
-<script type="module" src="js/cook.js?v=3"></script>
+
+<!-- FOCUS COOK MODE -->
+<div class="focus" id="focus">
+  <div class="fhead">
+    <span class="ft" id="fcrumb">готовка</span>
+    <button class="chip fexit" id="fExit">✕ список</button>
+  </div>
+  <div class="dots" id="fdots"></div>
+  <div class="stage" id="fstage"></div>
+  <div class="fnav">
+    <button class="chip" id="fPrev">‹ назад</button>
+    <button class="chip next" id="fNext">готово · далее ›</button>
+  </div>
+</div>
+
+<script type="module" src="js/cook.js?v=4"></script>
 </body>
 </html>
