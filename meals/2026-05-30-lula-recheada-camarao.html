@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#16130f">
+<title>foodOS · lula recheada × camarão</title>
+<style>
+  :root{
+    --bg:#16130f; --panel:#211c16; --panel2:#2b241c; --line:#3a3024;
+    --ink:#f3ece0; --mut:#a99b86; --faint:#6f6452;
+    --sea:#e8704a; --sea-dim:#5a3528;
+    --veg:#46d39a; --veg-dim:#1f4536;
+    --shared:#e8c45a; --shared-dim:#4a3f1f;
+    --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--sans)}
+  body{padding:0 0 120px;max-width:760px;margin:0 auto;font-size:17px;line-height:1.45}
+  a{color:inherit}
+  .wrap{padding:0 16px}
+
+  /* header */
+  header{padding:18px 16px 12px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#1c1812,#16130f)}
+  .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint)}
+  h1{font-family:var(--mono);font-size:20px;font-weight:700;margin:6px 0 2px;letter-spacing:-.01em;line-height:1.2}
+  .sub{font-family:var(--mono);font-size:12px;color:var(--mut)}
+  .meta{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-family:var(--mono);font-size:11px;color:var(--faint)}
+  .meta b{color:var(--mut);font-weight:500}
+
+  /* progress */
+  .progwrap{display:flex;align-items:center;gap:10px;margin-top:12px}
+  .progbar{flex:1;height:6px;background:var(--panel2);border-radius:6px;overflow:hidden}
+  .progfill{height:100%;width:0;background:linear-gradient(90deg,var(--shared),var(--sea));transition:width .35s ease}
+  .progpct{font-family:var(--mono);font-size:11px;color:var(--mut);min-width:34px;text-align:right}
+
+  /* segmented track switch */
+  .seg{position:sticky;top:0;z-index:30;display:flex;gap:4px;padding:10px 16px;background:rgba(22,19,15,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .seg button{flex:1;font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.02em;padding:11px 6px;border:1px solid var(--line);background:var(--panel);color:var(--mut);border-radius:10px;cursor:pointer;transition:.15s}
+  .seg button.on[data-t=both]{background:var(--panel2);color:var(--ink);border-color:var(--faint)}
+  .seg button.on[data-t=sea]{background:var(--sea-dim);color:var(--sea);border-color:var(--sea)}
+  .seg button.on[data-t=veg]{background:var(--veg-dim);color:var(--veg);border-color:var(--veg)}
+
+  /* section labels */
+  .phase{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin:22px 2px 8px;display:flex;align-items:center;gap:8px}
+  .phase .tag{padding:2px 7px;border-radius:5px;font-size:10px}
+  .tag.shared{background:var(--shared-dim);color:var(--shared)}
+  .tag.sea{background:var(--sea-dim);color:var(--sea)}
+  .tag.veg{background:var(--veg-dim);color:var(--veg)}
+
+  /* split banner */
+  .split{margin:20px 0;padding:14px 16px;border:1px dashed var(--shared);border-radius:12px;background:linear-gradient(180deg,var(--shared-dim),transparent);font-family:var(--mono);font-size:13px;color:var(--shared)}
+  .split b{color:#ffe9a8}
+  .split .arrows{display:flex;justify-content:space-around;margin-top:10px;font-size:11px}
+  .split .arrows span:first-child{color:var(--sea)}
+  .split .arrows span:last-child{color:var(--veg)}
+
+  /* step card */
+  .step{display:flex;gap:12px;padding:14px;margin:8px 0;border:1px solid var(--line);border-left-width:3px;border-radius:12px;background:var(--panel);transition:.2s}
+  .step[data-t=sea]{border-left-color:var(--sea)}
+  .step[data-t=veg]{border-left-color:var(--veg)}
+  .step[data-t=shared]{border-left-color:var(--shared)}
+  .step.done{opacity:.5}
+  .step.done .s-title{text-decoration:line-through}
+  .check{flex:0 0 30px;height:30px;border-radius:9px;border:2px solid var(--faint);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:2px;font-size:18px;color:transparent;transition:.15s}
+  .step.done .check{background:var(--veg);border-color:var(--veg);color:#0c1f17}
+  .step[data-t=sea].done .check{background:var(--sea);border-color:var(--sea);color:#1f0f08}
+  .step[data-t=shared].done .check{background:var(--shared);border-color:var(--shared);color:#211c16}
+  .s-body{flex:1;min-width:0}
+  .s-head{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .s-num{font-family:var(--mono);font-size:11px;color:var(--faint)}
+  .s-title{font-weight:600;font-size:16px}
+  .s-desc{color:var(--mut);font-size:14.5px;margin-top:4px}
+  .s-tip{margin-top:8px;font-family:var(--mono);font-size:12px;color:var(--shared);background:var(--shared-dim);padding:7px 9px;border-radius:8px;line-height:1.4}
+  .s-tip::before{content:"⚑ ";opacity:.7}
+
+  /* timer button */
+  .tbtn{margin-top:10px;font-family:var(--mono);font-size:13px;font-weight:600;padding:9px 14px;border:1px solid var(--faint);background:var(--panel2);color:var(--ink);border-radius:9px;cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+  .tbtn:active{transform:scale(.97)}
+  .tbtn.running{border-color:var(--sea);color:var(--sea)}
+
+  /* ingredients */
+  details{margin:10px 0;border:1px solid var(--line);border-radius:12px;background:var(--panel);overflow:hidden}
+  summary{padding:13px 14px;font-family:var(--mono);font-size:13px;font-weight:600;cursor:pointer;list-style:none;color:var(--mut)}
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:"▸ ";color:var(--faint)}
+  details[open] summary::before{content:"▾ "}
+  .ing{padding:0 16px 14px;font-size:14.5px}
+  .ing ul{margin:6px 0;padding-left:18px}
+  .ing li{margin:3px 0;color:var(--ink)}
+  .ing .h{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-top:10px}
+
+  /* running-timers dock */
+  .dock{position:fixed;left:0;right:0;bottom:0;z-index:40;max-width:760px;margin:0 auto;background:rgba(27,22,17,.96);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:10px 14px;display:none;gap:8px;flex-wrap:wrap}
+  .dock.show{display:flex}
+  .tchip{font-family:var(--mono);font-size:13px;font-weight:700;padding:8px 12px;border-radius:9px;background:var(--panel2);border:1px solid var(--faint);display:flex;align-items:center;gap:8px}
+  .tchip.sea{border-color:var(--sea);color:var(--sea)} .tchip.veg{border-color:var(--veg);color:var(--veg)} .tchip.shared{border-color:var(--shared);color:var(--shared)}
+  .tchip.ring{animation:flash .6s steps(2) infinite}
+  .tchip .x{cursor:pointer;opacity:.6;font-weight:400}
+  @keyframes flash{50%{background:var(--sea);color:#1a0e07}}
+
+  .hide{display:none!important}
+  footer{padding:26px 16px 10px;text-align:center;font-family:var(--mono);font-size:11px;color:var(--faint);line-height:1.7}
+  .reset{margin-top:8px;font-family:var(--mono);font-size:11px;color:var(--faint);background:none;border:1px solid var(--line);padding:6px 12px;border-radius:8px;cursor:pointer}
+</style>
+</head>
+<body>
+<header>
+  <div class="kicker">foodOS · трекер готовки</div>
+  <h1>lula recheada com chouriço × camarão</h1>
+  <div class="sub">фаршированный кальмар (чоризо) + креветки · 2 дорожки</div>
+  <div class="meta">
+    <span><b>дата</b> 30.05.2026</span>
+    <span><b>порций</b> ~3–4</span>
+    <span><b>актив. время</b> ~40 мин</span>
+    <span><b>всего</b> ~1 ч</span>
+  </div>
+  <div class="progwrap">
+    <div class="progbar"><div class="progfill" id="progfill"></div></div>
+    <div class="progpct" id="progpct">0%</div>
+  </div>
+</header>
+
+<div class="seg">
+  <button data-t="both" class="on" onclick="setTrack('both')">параллель</button>
+  <button data-t="sea" onclick="setTrack('sea')">🦑 море</button>
+  <button data-t="veg" onclick="setTrack('veg')">🌱 веган</button>
+</div>
+
+<div class="wrap">
+
+  <details>
+    <summary>ингредиенты — морская дорожка 🦑</summary>
+    <div class="ing">
+      <div class="h">главное</div>
+      <ul>
+        <li>фаршированные кальмары (lula recheada) — вся пачка ~500 г</li>
+        <li>креветки — ~12 шт</li>
+      </ul>
+      <div class="h">соус-база (общая)</div>
+      <ul>
+        <li>лук 1 · чеснок 4–5 зубч. · оливковое масло</li>
+        <li>томаты рубленые 1 банка (≈400 г) · белое вино плеск</li>
+        <li>копчёная паприка · лавровый лист · соль/щепотка сахара</li>
+      </ul>
+      <div class="h">креветки à guilho</div>
+      <ul><li>чеснок · хлопья чили · лимон · петрушка</li></ul>
+    </div>
+  </details>
+
+  <details>
+    <summary>ингредиенты — растительная дорожка 🌱</summary>
+    <div class="ing">
+      <div class="h">вместо кальмара (на выбор)</div>
+      <ul>
+        <li>королевские вёшенки 3–4 шт (лучший аналог по текстуре) <i>или</i> сладкие мини-перцы</li>
+      </ul>
+      <div class="h">начинка «в стиле чоризо»</div>
+      <ul>
+        <li>отварной рис ~1 чашка · копчёная паприка (даёт дым колбасы)</li>
+        <li>вяленые томаты · обжаренный лук · грецкие орехи · соль</li>
+      </ul>
+      <div class="h">соус</div>
+      <ul><li>половина общей томатной базы (отделить ДО морепродуктов)</li></ul>
+    </div>
+  </details>
+
+  <div id="steps"></div>
+
+</div>
+
+<div class="dock" id="dock"></div>
+
+<footer>
+  foodOS · правило кальмара: либо &lt;3 мин, либо &gt;30 мин — между = резина<br>
+  прогресс сохраняется в этом устройстве
+  <br><button class="reset" onclick="resetAll()">сбросить прогресс</button>
+</footer>
+
+<script>
+const MEAL='lula-2026-05-30';
+const STEPS=[
+  // ---- shared base ----
+  {id:'s1',t:'shared',title:'разморозь и обсуши',desc:'Кальмары и креветки — в холодную воду на 15–20 мин (как сейчас в раковине). Потом насухо промокни бумажным полотенцем — иначе не подрумянятся.',time:1200},
+  {id:'s2',t:'shared',title:'соус-база: лук + чеснок',desc:'На оливковом масле обжарь нарезанный лук и чеснок до мягкости и аромата.',time:300},
+  {id:'s3',t:'shared',title:'томат + вино + паприка',desc:'Добавь банку рубленых томатов, плеск белого вина, лавровый лист, копчёную паприку, соль и щепотку сахара. Прогрей ~3 мин.',time:180},
+  {id:'split',t:'split'},
+  // ---- sea ----
+  {id:'sea1',t:'sea',title:'подрумянь фаршированные тушки',desc:'Обсушенные кальмары — 2 мин с каждой стороны на сильном огне. НЕ прокалывай (начинка с чоризо внутри). Открытый конец закрепи зубочисткой.',time:240,tip:'не протыкай тушку — потеряешь начинку и сок'},
+  {id:'sea2',t:'sea',title:'туши кальмары в соусе',desc:'Переложи в морскую сковороду с соусом, накрой крышкой, томи на МЕДЛЕННОМ огне 30–35 мин, переверни один раз. Готово, когда нож входит легко.',time:2100,tip:'фаршированные тушки = только долгое тушение, быстро их нельзя'},
+  {id:'sea3',t:'sea',title:'креветки à guilho',desc:'За 5 мин до подачи: раскали сковороду, оливковое масло + тонко резаный чеснок + хлопья чили. Креветки по 2 мин с каждой стороны до розового, в конце лимон + петрушка.',time:240},
+  {id:'sea4',t:'sea',title:'подача — море',desc:'Кальмары в соусе на тарелку, сверху чесночные креветки, петрушка, корка хлеба для соуса.'},
+  // ---- veg ----
+  {id:'veg1',t:'veg',title:'начинка «в стиле чоризо»',desc:'Смешай отварной рис с копчёной паприкой, вялеными томатами, обжаренным луком, рублёными грецкими орехами и солью. Дымный умами вместо колбасы.',time:0},
+  {id:'veg2',t:'veg',title:'нафаршируй',desc:'Королевские вёшенки разрежь вдоль и вынь серединку (или возьми мини-перцы) — плотно набей начинкой.'},
+  {id:'veg3',t:'veg',title:'туши в веган-соусе',desc:'Поставь фаршированные в растительную сковороду с соусом, накрой, 20–25 мин на слабом огне.',time:1500},
+  {id:'veg4',t:'veg',title:'вёшенки à guilho (опц.)',desc:'Бруски королевской вёшенки + чеснок + чили + масло, 4–5 мин до золотистого, в конце лимон + петрушка. Растительный аналог креветок.',time:300},
+  {id:'veg5',t:'veg',title:'подача — веган',desc:'Так же: фаршированные в соусе, сверху грибы à guilho, петрушка, хлеб.'},
+];
+
+let track=localStorage.getItem('foodos:'+MEAL+':track')||'both';
+const done=new Set(JSON.parse(localStorage.getItem('foodos:'+MEAL+':done')||'[]'));
+
+function saveDone(){localStorage.setItem('foodos:'+MEAL+':done',JSON.stringify([...done]))}
+function fmt(s){const m=Math.floor(s/60),x=s%60;return m+':'+String(x).padStart(2,'0')}
+
+function render(){
+  const root=document.getElementById('steps');root.innerHTML='';
+  let lastPhase='';
+  STEPS.forEach(st=>{
+    if(st.t==='split'){
+      const d=document.createElement('div');d.className='split';d.dataset.phase='split';
+      d.innerHTML='<b>⑃ точка разделения.</b> Раздели соус на две сковороды. С этого момента в растительную сковороду НЕ попадают морепродукты — дальше дорожки идут параллельно.'+
+        '<div class="arrows"><span>🦑 → кальмары + креветки</span><span>🌱 → грибы/перцы</span></div>';
+      root.appendChild(d);return;
+    }
+    // phase label
+    if(st.t!==lastPhase){
+      lastPhase=st.t;
+      const ph=document.createElement('div');ph.className='phase';ph.dataset.phase=st.t;
+      const names={shared:'общая база',sea:'морская дорожка',veg:'растительная дорожка'};
+      ph.innerHTML='<span class="tag '+st.t+'">'+st.t+'</span> '+names[st.t];
+      root.appendChild(ph);
+    }
+    const el=document.createElement('div');
+    el.className='step'+(done.has(st.id)?' done':'');el.dataset.t=st.t;el.dataset.id=st.id;
+    el.innerHTML=
+      '<button class="check" onclick="toggle(\''+st.id+'\')">✓</button>'+
+      '<div class="s-body">'+
+        '<div class="s-head"><span class="s-num">'+st.id+'</span><span class="s-title">'+st.title+'</span></div>'+
+        '<div class="s-desc">'+st.desc+'</div>'+
+        (st.tip?'<div class="s-tip">'+st.tip+'</div>':'')+
+        (st.time?'<button class="tbtn" data-id="'+st.id+'" onclick="startTimer(\''+st.id+'\','+st.time+',\''+st.t+'\')">▶ таймер '+fmt(st.time)+'</button>':'')+
+      '</div>';
+    root.appendChild(el);
+  });
+  applyTrack();updateProgress();
+}
+
+function applyTrack(){
+  document.querySelectorAll('.seg button').forEach(b=>b.classList.toggle('on',b.dataset.t===track));
+  const show=t=>track==='both'||t==='shared'||t==='split'||t===track;
+  document.querySelectorAll('#steps .step').forEach(e=>e.classList.toggle('hide',!show(e.dataset.t)));
+  document.querySelectorAll('#steps .phase').forEach(e=>e.classList.toggle('hide',!show(e.dataset.phase)));
+  document.querySelectorAll('#steps .split').forEach(e=>e.classList.toggle('hide',!(track==='both'||track==='sea'||track==='veg')));
+}
+function setTrack(t){track=t;localStorage.setItem('foodos:'+MEAL+':track',t);applyTrack()}
+
+function toggle(id){
+  done.has(id)?done.delete(id):done.add(id);saveDone();
+  const el=document.querySelector('.step[data-id="'+id+'"]');if(el)el.classList.toggle('done',done.has(id));
+  updateProgress();
+}
+
+function updateProgress(){
+  const show=t=>track==='both'||t==='shared'||t===track;
+  const vis=STEPS.filter(s=>s.t!=='split'&&show(s.t));
+  const d=vis.filter(s=>done.has(s.id)).length;
+  const pct=vis.length?Math.round(d/vis.length*100):0;
+  document.getElementById('progfill').style.width=pct+'%';
+  document.getElementById('progpct').textContent=pct+'%';
+}
+
+/* ---- timers ---- */
+const timers={};let actx=null;
+function beep(){try{actx=actx||new(window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain();o.connect(g);g.connect(actx.destination);o.frequency.value=880;g.gain.value=.18;o.start();let n=0;const iv=setInterval(()=>{o.frequency.value=n%2?660:880;if(++n>7){o.stop();clearInterval(iv)}},180)}catch(e){}}
+function startTimer(id,sec,t){
+  if(timers[id]){return}
+  timers[id]={left:sec,t:t,title:STEPS.find(s=>s.id===id).title};
+  const btn=document.querySelector('.tbtn[data-id="'+id+'"]');if(btn){btn.classList.add('running');}
+  timers[id].iv=setInterval(()=>{
+    timers[id].left--;
+    if(timers[id].left<=0){clearInterval(timers[id].iv);timers[id].ring=true;beep();if(navigator.vibrate)navigator.vibrate([300,120,300]);}
+    drawDock();
+  },1000);
+  drawDock();
+}
+function stopTimer(id){if(timers[id]){clearInterval(timers[id].iv);delete timers[id];const b=document.querySelector('.tbtn[data-id="'+id+'"]');if(b)b.classList.remove('running');drawDock();}}
+function drawDock(){
+  const dock=document.getElementById('dock');const ids=Object.keys(timers);
+  dock.classList.toggle('show',ids.length>0);dock.innerHTML='';
+  ids.forEach(id=>{const tm=timers[id];
+    const c=document.createElement('div');c.className='tchip '+tm.t+(tm.ring?' ring':'');
+    c.innerHTML=(tm.ring?'⏰ ':'')+tm.title.slice(0,16)+' · '+(tm.left>0?fmt(tm.left):'готово')+' <span class="x" onclick="stopTimer(\''+id+'\')">✕</span>';
+    dock.appendChild(c);
+  });
+}
+
+function resetAll(){if(confirm('Сбросить все галочки и таймеры?')){done.clear();saveDone();Object.keys(timers).forEach(stopTimer);render();}}
+
+render();
+</script>
+</body>
+</html>

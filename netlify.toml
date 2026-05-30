@@ -1,0 +1,13 @@
+# foodos · netlify config — static site + serverless functions
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # camera (getUserMedia) needs a secure context — netlify is https by default
+    Permissions-Policy = "camera=(self)"
