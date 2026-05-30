@@ -2,7 +2,7 @@
 
 Кухонный инструмент в эстетике **shaper** (B&W technical-manual / patent drawing). Превращает «что в руках» в phone-first трекер готовки с двумя дорожками — морская и растительная — общей базой и точкой разделения.
 
-**Live:** https://foodos-kitchen.netlify.app · `fig.01` — *lula recheada com chouriço × camarão* (фаршированный кальмар + креветки, разморозка → стол).
+**Live:** https://foodos-lula-camarao.netlify.app · `fig.01` — *lula recheada com chouriço × camarão* (фаршированный кальмар + креветки, разморозка → стол).
 
 ## Что умеет
 

@@ -39,7 +39,7 @@ export default async (req) => {
       headers: {
         Authorization: `Bearer ${key}`,
         "Content-Type": "application/json",
-        "HTTP-Referer": "https://foodos-kitchen.netlify.app",
+        "HTTP-Referer": "https://foodos-lula-camarao.netlify.app",
         "X-Title": "foodos",
       },
       body: JSON.stringify({
