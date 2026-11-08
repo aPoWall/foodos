@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="foodos-static" content="1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f6f8f7">
+<title>FoodOS · атлас вкуса</title>
+<meta name="description" content="Атлас FoodOS. Граф 21 кухни, 23 блюда в 3D, журнал экспериментов, два мясных ужина на гхи и алхимический комбайн.">
+<link rel="canonical" href="https://foodos-lula-camarao.netlify.app/atlas/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="FoodOS · атлас вкуса">
+<meta property="og:description" content="21 профиль кухонь, девять глав об аюрведической кулинарии и алхимический комбайн для сборки проб из 38 операций.">
+<meta property="og:url" content="https://foodos-lula-camarao.netlify.app/atlas/">
+<meta property="og:image" content="https://foodos-lula-camarao.netlify.app/atlas/assets/taste-atlas-cover-v4.png?v=6">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="FoodOS · 3D-карта по воде, жиру и времени и два мясных эксперимента.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="FoodOS · атлас вкуса">
+<meta name="twitter:description" content="21 профиль кухонь, девять глав об аюрведической кулинарии и алхимический комбайн для сборки проб из 38 операций.">
+<meta name="twitter:image" content="https://foodos-lula-camarao.netlify.app/atlas/assets/taste-atlas-cover-v4.png?v=6">
+<meta name="twitter:image:alt" content="FoodOS · 3D-карта по воде, жиру и времени и два мясных эксперимента.">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/shaper.css?v=19">
+<link rel="stylesheet" href="css/taste-atlas.css?v=6">
+<script defer src="js/taste-atlas-data.js?v=3"></script>
+<script defer src="js/taste-atlas-water.js?v=3"></script>
+<script defer src="js/taste-atlas-research.js?v=4"></script>
+<script defer src="js/taste-atlas-cultures.js?v=5"></script>
+<script defer src="js/taste-atlas-alchemy.js?v=5"></script>
+<script defer src="js/taste-atlas-field-data.js?v=6"></script>
+<script defer src="js/taste-atlas-map.js?v=6"></script>
+<script defer src="js/taste-atlas-experiments.js?v=6"></script>
+<script defer src="js/taste-atlas-lab.js?v=6"></script>
+<script defer src="js/taste-atlas-compare.js?v=6"></script>
+<script defer src="js/taste-atlas.js?v=6"></script>
+</head>
+<body>
+<main class="wrap atlas">
+  <header class="top">
+    <div class="brand"><a href="https://foodos-lula-camarao.netlify.app/"><span class="dot"></span>FoodOS</a></div>
+    <div class="crumb">knowledge · <b>атлас вкуса</b></div>
+    <div class="ctl"><a class="chip" href="#compose">＋ собрать пробу</a></div>
+  </header>
+  <nav class="atlas-nav" aria-label="Карты атласа">
+    <a class="chip" href="#systems" id="nav-systems">01 · устройство кухонь</a>
+    <a class="chip" href="#ayurveda" id="nav-ayurveda">02 · аюрведа</a>
+    <a class="chip" href="#library" id="nav-library">03 · библиотека культур</a>
+    <a class="chip" href="#compose" id="nav-compose">04 · алхимический комбайн</a>
+    <a class="chip" href="#water" id="nav-water">05 · ветка воды</a>
+    <a class="chip" href="#compare" id="nav-compare">06 · сравнить кухни</a>
+    <a class="chip" href="#map" id="nav-map">07 · карта кухонь</a>
+    <a class="chip" href="#experiments" id="nav-experiments">08 · эксперименты</a>
+  </nav>
+  <noscript>Для интерактивных карт включи JavaScript. Исследование и анимированные схемы доступны в Obsidian.</noscript>
+  <section id="page-systems" aria-labelledby="systems-title">
+    <div class="atlas-primary">
+      <div class="atlas-caption"><span>FIG.T01 · COOKING SYSTEMS</span><span>04 МАРШРУТА</span></div>
+      <h1 id="systems-title">как кухни собирают вкус</h1>
+      <p class="atlas-lead">Выбери блюдо, чтобы увидеть его маршрут. Нажми на узел, чтобы разобрать приём.</p>
+      <div class="atlas-controls">
+        <div class="atlas-choice" id="route-choices" aria-label="Блюдо"></div>
+        <button class="chip atlas-play" id="route-play" type="button" aria-pressed="false">▷ проиграть маршрут</button>
+      </div>
+      <div class="atlas-workbench">
+        <div id="route-graph" class="atlas-graph" aria-label="Граф операций"></div>
+        <div class="atlas-readout" id="route-detail" aria-live="polite"></div>
+      </div>
+    </div>
+    <aside class="atlas-aside">
+      <div class="seclab">⌬ как считывать вкус</div>
+      <p>В современном сенсорном описании есть как минимум пять основных вкусов, включая умами. Запах, жжение, температура и текстура тоже меняют впечатление от тарелки. Граф сравнивает приёмы на конкретных блюдах.</p>
+      <a class="atlas-source" href="https://www.nidcd.nih.gov/health/taste-disorders">↗ NIDCD · вкус и восприятие</a>
+      <a class="chip" href="#compare">сопоставить два блюда →</a>
+    </aside>
+    <div class="seclab">02 · индекс операций по 21 блюду</div>
+    <div class="atlas-primary operation-index">
+      <p class="atlas-lead">Число показывает, сколько шагов маршрута затрагивает операцию. Нажми на число, чтобы прочитать эти шаги и открыть подходящее сравнение.</p>
+      <div id="operation-index"></div>
+    </div>
+  </section>
+  <section id="page-ayurveda" aria-labelledby="ayurveda-title" hidden>
+    <div class="atlas-primary">
+      <div class="atlas-caption"><span>FIG.T02 · ṢAḌ RASA</span><span>06 ОЩУЩЕНИЙ</span></div>
+      <h1 id="ayurveda-title">аюрведическая карта вкуса</h1>
+      <p class="atlas-lead">Шесть rasa и девять глав о качествах, обработке, сочетаниях, времени и роли жира. Луч открывает ощущение, главы связывают текст с конкретной операцией у плиты.</p>
+      <div class="atlas-controls"><button class="chip atlas-play" id="rasa-play" type="button" aria-pressed="false">▷ пройти шесть rasa</button></div>
+      <div class="atlas-workbench">
+        <div id="rasa-graph" class="atlas-graph rasa-graph" aria-label="Шесть rasa"></div>
+        <div id="rasa-detail" class="atlas-readout" aria-live="polite"></div>
+      </div>
+    </div>
+    <div class="seclab">читать · девять глав</div>
+    <div class="atlas-lab chapter-lab">
+      <div id="ayurveda-chapters" class="atlas-choice" aria-label="Главы"></div>
+      <div id="ayurveda-chapter" class="atlas-readout" aria-live="polite"></div>
+    </div>
+    <div class="seclab">01 · приправа и проба</div>
+    <div class="atlas-readout rasa-guide" id="rasa-guide" aria-live="polite"></div>
+    <div class="seclab">02 · операции с водой</div>
+    <div class="atlas-lab">
+      <div id="water-choices" class="atlas-choice" aria-label="Способ подготовки водой"></div>
+      <div id="water-detail" class="atlas-readout" aria-live="polite"></div>
+    </div>
+    <div class="seclab">03 · когда добавлять специи</div>
+    <div class="atlas-lab">
+      <div id="spice-choices" class="atlas-choice" aria-label="Этап работы со специями"></div>
+      <div id="spice-detail" class="atlas-readout" aria-live="polite"></div>
+    </div>
+    <div class="seclab">04 · восемь факторов еды</div>
+    <ol id="factors" class="atlas-factors"></ol>
+    <div class="atlas-sources">
+      <a class="atlas-source" href="https://carakasamhitaonline.com/index.php?title=Rasa_Vimana">↗ Caraka Saṃhitā · Vimāna 1.21–22</a>
+      <a class="atlas-source" href="https://www.nccih.nih.gov/health/ayurvedic-medicine-in-depth">↗ NCCIH · уровень доказательств</a>
+    </div>
+    <aside class="atlas-aside">
+      <div class="seclab">05 · домашняя проба</div>
+      <p>Две одинаковые ложки кичари, одинаковая доза гхи. В одной – гхи само по себе, в другой – гхи с прогретой зирой. Сравни запах. Куриное бедро с кожей или вёшенку подай отдельно. Это вариация FoodOS. Классический текст рассматривает мясо и молочные продукты в отдельных категориях.</p>
+      <a class="atlas-source" href="https://www.carakasamhitaonline.com/index.php/Annapanavidhi_Adhyaya">↗ Caraka Saṃhitā · Sūtra 27</a>
+    </aside>
+    <div class="seclab">06 · от классического текста к сравнению кухонь</div>
+    <div class="ayurveda-bridges" id="ayurveda-bridges"></div>
+  </section>
+  <section id="page-library" aria-labelledby="library-title" hidden>
+    <div class="atlas-primary">
+      <div class="atlas-caption"><span>FIG.T03 · COOKING LIBRARY</span><span id="library-count">21 ПРОФИЛЬ</span></div>
+      <h1 id="library-title">библиотека культур</h1>
+      <p class="atlas-lead">Открой кухню и посмотри, как устроен её стол и в какой последовательности работают приёмы. У каждого профиля есть локальные варианты, межкультурная пара, разобранное блюдо и операции для комбайна.</p>
+      <div class="library-filters">
+        <label>Кухня, практика или пример<input type="search" id="library-query" placeholder="например, тамильская или настой"></label>
+        <label>Регион<select id="library-zone"><option value="">Все регионы</option></select></label>
+        <label>Ощущение<select id="library-rasa"><option value="">Все ощущения</option></select></label>
+      </div>
+      <div class="library-workbench">
+        <div id="library-index" class="library-index" aria-label="Примеры кухонь"></div>
+        <div id="library-detail" class="atlas-readout library-detail" aria-label="Профиль кухни"></div>
+      </div>
+    </div>
+    <aside class="atlas-aside">
+      <div class="seclab">⌬ как читать параллели</div>
+      <p>Тамариндовый настой в самбаре, лимон в чермуле и кислота готового кимчи могут давать заметное кислое ощущение. Это три разных механизма и три разные традиции.</p>
+      <div class="atlas-sources"><a class="atlas-source" href="https://premasculinary.com/2020/11/arachuvitta-sambar-recipe.html">↗ Prema’s Culinary · самбар</a><a class="atlas-source" href="https://tasteofmaroc.com/moroccan-fish-tagine-with-chermoula-and-vegetables/">↗ Taste of Maroc · чермула</a><a class="atlas-source" href="https://www.maangchi.com/recipe/tongbaechu-kimchi">↗ Maangchi · кимчи</a></div>
+    </aside>
+  </section>
+  <section id="page-compose" aria-labelledby="compose-title" hidden>
+    <div class="atlas-primary">
+      <div class="atlas-caption"><span>FIG.T04 · TASTE COMPOSER</span><span id="alchemy-count">05 СТАДИЙ</span></div>
+      <h1 id="compose-title">алхимический комбайн</h1>
+      <p class="atlas-lead">Собери тарелку из пяти операций разных кухонь. Выбери узел, чтобы поменять приём. Схема покажет, что проходит дальше, что лучше подготовить отдельно и какую переменную сравнить на двух ложках.</p>
+      <div id="alchemy"></div>
+    </div>
+    <details class="atlas-primary legacy-compose" id="legacy-compose">
+      <summary>Быстрая сборка · три операции и текст для трекера</summary>
+      <div class="compose-selects" id="compose-parts"></div>
+      <div class="atlas-choice compose-modes" id="compose-modes" aria-label="Вариант блюда"></div>
+      <div class="compose-bench">
+        <div class="atlas-readout" id="compose-recipe" aria-live="polite"></div>
+        <div class="atlas-readout">
+          <div class="atlas-kicker">ПЕРЕДАТЬ В FOODOS</div>
+          <label for="compose-prompt">Текст для трекера у плиты</label>
+          <textarea id="compose-prompt" readonly rows="9"></textarea>
+          <div class="atlas-choice">
+            <button id="compose-copy" class="chip" type="button">копировать</button>
+            <a class="chip" href="https://foodos-lula-camarao.netlify.app/#ctxInput">открыть композер FoodOS ↗</a>
+          </div>
+          <small id="compose-status" role="status"></small>
+        </div>
+      </div>
+    </details>
+  </section>
+  <section id="page-water" aria-labelledby="water-title" hidden>
+    <div class="atlas-primary">
+      <div class="atlas-caption"><span>FIG.T05 · WATER STUDY</span><span>06 ОПЕРАЦИЙ</span></div>
+      <h1 id="water-title">что вода делает со вкусом</h1>
+      <p class="atlas-lead">Выбери операцию, чтобы увидеть, что изменилось и на каких блюдах это заметно. Одна кастрюля может пройти несколько узлов подряд.</p>
+      <div class="atlas-controls">
+        <div class="atlas-choice" id="water-lenses" aria-label="Подсветить общую связь"></div>
+        <button class="chip atlas-play" id="water-play" type="button" aria-pressed="false">▷ пройти ветку</button>
+      </div>
+      <div class="atlas-workbench">
+        <div class="atlas-graph" id="water-graph" aria-label="Граф операций с водой"></div>
+        <div class="atlas-readout" id="water-branch-detail" aria-live="polite"></div>
+      </div>
+    </div>
+    <div class="seclab">01 · от исследования к плите</div>
+    <div class="study-meals" id="water-meals"></div>
+    <aside class="atlas-aside">
+      <div class="seclab">02 · один ужин, две ложки</div>
+      <p>Выбери одну операцию, например выпаривание. Отлей ложку соуса перед увариванием. Сравни с ложкой готового соуса при близкой температуре и только потом реши, сколько соли или кислоты добавить.</p>
+    </aside>
+  </section>
+  <section id="page-compare" aria-labelledby="compare-title" hidden>
+    <div class="atlas-primary">
+      <div class="atlas-caption"><span>FIG.T06 · COMPARATIVE KITCHENS</span><span>21 МАРШРУТ / 12 РАЗБОРОВ</span></div>
+      <h1 id="compare-title">где кухни сходятся</h1>
+      <p class="atlas-lead">Выбери две кухни и сравни их через конкретные маршруты. Линия открывает шаги, где они решают похожую задачу. Под графом можно прочитать грамматики кухонь и забрать операции в свою пробу.</p>
+      <div class="compare-selects">
+        <label>Кухня слева<select id="compare-left"></select></label>
+        <label>Кухня справа<select id="compare-right"></select></label>
+        <label>Готовый разбор<select id="compare-pair"><option value="">Выбрать пару</option></select></label>
+      </div>
+      <div class="atlas-choice compare-lenses" id="compare-lenses" aria-label="Фильтр операций"></div>
+      <div class="compare-graph" id="compare-graph" aria-label="Два параллельных маршрута"></div>
+      <div id="compare-edges" class="atlas-choice compare-edges" aria-label="Связи между этапами"></div>
+      <div id="compare-stage" class="library-step compare-stage" aria-live="polite"></div>
+    </div>
+    <div class="seclab">01 · две грамматики</div>
+    <div id="culture-comparison" class="compare-reading"></div>
+    <div class="seclab">02 · что можно перенести в свою кухню</div>
+    <div class="compare-reading" id="compare-reading"></div>
+  </section>
+  <section id="page-map" aria-labelledby="map-title" hidden>
+    <div class="atlas-primary">
+      <div class="atlas-caption"><span>FIG.T07 · CULINARY MAP</span><span>21 КУХНЯ / 23 БЛЮДА</span></div>
+      <h1 id="map-title">карта кухонь</h1>
+      <div class="atlas-choice field-switch" aria-label="Режим карты">
+        <a id="map-mode-network" class="chip" href="#map/network">граф связей</a>
+        <a id="map-mode-space" class="chip" href="#map/space">блюда в 3D</a>
+      </div>
+      <div id="map-network">
+        <p class="atlas-lead">Выбери кухню и слой. Тёмные линии показывают, с какими кухнями у выбранного приёма есть разобранная связь.</p>
+        <div class="compose-selects"><label>Кухня<select id="network-culture"></select></label></div>
+        <div id="network-lenses" class="atlas-choice field-switch" aria-label="Слой графа"></div>
+        <div class="atlas-workbench">
+          <div id="network-graph" class="field-figure"></div>
+          <div id="network-detail" class="atlas-readout field-detail"></div>
+        </div>
+      </div>
+      <div id="map-space" hidden>
+        <p class="atlas-lead">Поверни куб и закрепи две точки. Шкала от 0 до 4 описывает место воды, роль жира и время именно в выбранной версии блюда.</p>
+        <div class="compose-selects field-pair">
+          <label>Точка A<select id="space-a"></select></label>
+          <label>Точка B<select id="space-b"></select></label>
+        </div>
+        <div id="space-graph" class="field-figure space-figure"></div>
+        <div class="space-controls">
+          <label>Поворот<input id="space-yaw" type="range" min="-180" max="180" step="1" value="34"></label>
+          <label>Наклон<input id="space-pitch" type="range" min="-75" max="75" step="1" value="-19"></label>
+          <a class="atlas-source" href="assets/atlas-space.gif">смотреть GIF →</a>
+        </div>
+        <div id="space-detail" class="compare-reading"></div>
+      </div>
+    </div>
+  </section>
+  <section id="page-experiments" aria-labelledby="experiments-title" hidden>
+    <div class="atlas-primary">
+      <div class="atlas-caption"><span>FIG.T08 · FIELD EXPERIMENTS</span><span>02 УЖИНА / A·B</span></div>
+      <h1 id="experiments-title">кухонные эксперименты</h1>
+      <p class="atlas-lead">Два ужина в аюрведической кулинарной логике. У каждого есть график готовки, трекер, гипотеза и одна переменная для сравнения.</p>
+      <div id="dinner-options" class="atlas-choice field-switch" aria-label="Выбор ужина"></div>
+      <div id="dinner-detail" class="atlas-readout field-detail"></div>
+      <p><a class="atlas-source" href="assets/atlas-dinners.gif">расписания двух ужинов в GIF →</a></p>
+    </div>
+    <div class="seclab">01 · запланировать → приготовить → сравнить → записать</div>
+    <div class="field-log">
+      <form id="experiment-form" class="atlas-readout">
+        <h2>новая запись</h2>
+        <label>Название<input name="name" required maxlength="110" placeholder="например, гхи с зирой"></label>
+        <div class="field-form-row">
+          <label>Дата<input type="date" name="date" required></label>
+          <label>Статус<select name="status"><option value="planned">запланирован</option><option value="cooking">готовлю</option><option value="done">готово</option><option value="archived">архив</option></select></label>
+        </div>
+        <label>Гипотеза<textarea name="baseline" rows="2" maxlength="650"></textarea></label>
+        <label>Что меняю в B<textarea name="variable" rows="2" maxlength="650"></textarea></label>
+        <label>Что получилось<textarea name="result" rows="3" maxlength="2000"></textarea></label>
+        <details id="experiment-map-fields" class="experiment-map-fields">
+          <summary>Разметка своей версии в 3D</summary>
+          <label class="field-check"><input name="mapEnabled" type="checkbox">Показать как точку на карте</label>
+          <label>Связанная кухня<select name="mapCulture"></select></label>
+          <div class="field-form-row field-form-axes">
+            <label>Вода<select name="mapWater"></select></label>
+            <label>Жир<select name="mapFat"></select></label>
+            <label>Время<select name="mapTime"></select></label>
+          </div>
+        </details>
+        <div class="atlas-choice"><button id="experiment-save" type="submit" class="chip">сохранить опыт</button><button id="experiment-clear" type="button" class="chip">новая запись</button></div>
+      </form>
+      <div class="atlas-readout">
+        <h2>журнал и расписание</h2>
+        <p>Записи хранятся в этом браузере. JSON переносит их на другое устройство.</p>
+        <div class="atlas-choice field-files">
+          <button type="button" id="experiment-export" class="chip">экспорт JSON</button>
+          <label class="field-file">Импорт JSON<input type="file" id="experiment-import" accept="application/json,.json"></label>
+        </div>
+        <small id="experiment-status" role="status"></small>
+        <div id="experiment-list"></div>
+      </div>
+    </div>
+  </section>
+  <footer class="atlas-footer">FOODOS / KNOWLEDGE / 08.11.2026 <span>●</span></footer>
+</main>
+</body>
+</html>
