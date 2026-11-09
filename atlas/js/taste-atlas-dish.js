@@ -1,10 +1,11 @@
 import { ingredientDrawing } from './ingredient-art.js?v=1';
 import { getMeal, drawMetaphor } from './store.js?v=19';
 import { TRADITIONS } from './taste-atlas-traditions.js?v=1';
+import { mountRecipeGuide } from './taste-atlas-guide.js?v=1';
 
 const roles = {note:'заметка', question:'вопрос', chef:'шеф FoodOS', guide:'подсказка атласа'};
 const collator = new Intl.Collator('ru');
-let current, catalog, audioManifest, request = 0;
+let current, catalog, audioManifest, closeGuide, request = 0;
 
 function loadManifest() {
   audioManifest ??= fetch('data/atlas-audio.json').then(response => {
@@ -41,10 +42,13 @@ async function resolveDish(id) {
   if (!/^[\w-]{1,80}$/.test(id)) return null;
   try {
     const meal = await getMeal(id);
-    return {...entry,id,meal:true,name:meal.title,summary:entry?.summary || meal.sub,
+    const guided = !!meal.guided && meal.steps?.some(step => step.t !== 'split');
+    return {...entry,id,meal:true,guided,illustration:meal.illustration,name:meal.title,
+      summary:guided ? meal.sub : entry?.summary || meal.sub,
       ingredients:meal.ingredients || [],
       steps:(meal.steps || []).filter(step => step.t !== 'split').map(step => ({
         id:step.id, title:step.ttl, text:step.lead, tip:step.tip, time:step.time,
+        origin:step.origin,timerLabel:step.timerLabel,
         track:meal.tracks?.[step.t]?.label,
       }))};
   } catch {
@@ -62,6 +66,18 @@ function dishLinks(dish) {
     if (dish.culture === 'kitchari') actions.append(internalLink('#ayurveda','шесть rasa →'));
   }
   actions.append(internalLink('#experiments'+(knownDinner.has(dish.id) ? '/'+dish.id : ''),'эксперименты →'));
+  if (dish.guided) {
+    const button = control('журнал блюда',() => {
+      const chat = $atlas('dish-chat');
+      chat.hidden = !chat.hidden;
+      button.setAttribute('aria-expanded',String(!chat.hidden));
+      if (!chat.hidden) chat.scrollIntoView({block:'nearest'});
+    });
+    button.removeAttribute('aria-pressed');
+    button.setAttribute('aria-controls','dish-chat');
+    button.setAttribute('aria-expanded','false');
+    actions.append(button);
+  }
   return actions;
 }
 
@@ -147,6 +163,8 @@ function renderSteps(dish) {
   select.replaceChildren(selectOption('Блюдо целиком',''));
   dish.steps.forEach((step,index) => {
     const row = element('li');
+    list.append(row);
+    if (dish.guided) return;
     row.append(element('b',step.title),element('p',step.text));
     if (step.tip) row.append(element('small',step.tip));
     if (step.track) row.append(element('small','Дорожка · '+step.track));
@@ -154,7 +172,6 @@ function renderSteps(dish) {
       select.value = String(index);
       $atlas('dish-message').focus();
     }));
-    list.append(row);
     select.append(selectOption((index+1)+' · '+step.title,String(index)));
   });
 }
@@ -287,6 +304,8 @@ function saveFormat(event) {
 
 async function openDish(id,reference) {
   const serial = ++request;
+  closeGuide?.();
+  closeGuide = null;
   const audio = $atlas('dish-audio');
   audio.pause();
   audio.removeAttribute('src');
@@ -302,6 +321,17 @@ async function openDish(id,reference) {
     return;
   }
   current = {dish,runId:dishRuns(dish.id).find(item => item.id === reference)?.id || dishRuns(dish.id)[0]?.id};
+  contents.classList.toggle('is-guided',!!dish.guided);
+  $atlas('dish-chat').hidden = $atlas('dish-stage-field').hidden = !!dish.guided;
+  const figure = $atlas('dish-illustration');
+  figure.hidden = true;
+  if (dish.guided && /^assets\/[\w.-]+\.jpg$/i.test(dish.illustration?.src)) {
+    const image = figure.querySelector('img');
+    image.src = dish.illustration.src;
+    image.alt = dish.illustration.alt;
+    figure.querySelector('figcaption').textContent = dish.illustration.caption+' · '+dish.illustration.credit;
+    figure.hidden = false;
+  }
   const picker = $atlas('dish-picker');
   if (!Array.from(picker.options).some(option => option.value === dish.id)) picker.append(selectOption(dish.name,dish.id));
   picker.value = dish.id;
@@ -315,16 +345,17 @@ async function openDish(id,reference) {
   $atlas('dish-audio-note').textContent = 'Загружается сценарий…';
   audio.hidden = true;
   renderSteps(dish);
-  if (reference?.startsWith('step-')) {
-    const index = dish.steps.findIndex(step => encodeURIComponent(step.id) === reference.slice(5));
-    if (index >= 0) $atlas('dish-stage').value = String(index);
-  }
+  const stage = reference?.startsWith('step-')
+    ? dish.steps.findIndex(step => encodeURIComponent(step.id) === reference.slice(5))
+    : -1;
+  if (stage >= 0 && !dish.guided) $atlas('dish-stage').value = String(stage);
   showIngredients(dish);
   showTraditions(dish);
   showRun();
   const manifest = await loadManifest();
   if (serial !== request || !location.hash.startsWith('#dish')) return;
   const recorded = manifest[dish.id];
+  if (dish.guided) closeGuide = mountRecipeGuide(dish,recorded?.steps || {},Math.max(0,stage));
   const script = recorded?.transcript || [dish.name,...dish.steps.map(step => step.text)].join(' ');
   $atlas('dish-transcript').textContent = script;
   if (recorded) {
@@ -347,6 +378,8 @@ function routeDish() {
   if (page === 'dish') openDish(id,reference);
   else {
     ++request;
+    closeGuide?.();
+    closeGuide = null;
     $atlas('dish-audio').pause();
     if (current && 'speechSynthesis' in window) speechSynthesis.cancel();
     current = null;

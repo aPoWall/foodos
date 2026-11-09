@@ -27,19 +27,19 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/shaper.css?v=19">
-<link rel="stylesheet" href="css/taste-atlas.css?v=7">
-<script defer src="js/taste-atlas-data.js?v=7"></script>
+<link rel="stylesheet" href="css/taste-atlas.css?v=8">
+<script defer src="js/taste-atlas-data.js?v=8"></script>
 <script defer src="js/taste-atlas-water.js?v=3"></script>
 <script defer src="js/taste-atlas-research.js?v=4"></script>
 <script defer src="js/taste-atlas-cultures.js?v=5"></script>
 <script defer src="js/taste-atlas-alchemy.js?v=5"></script>
-<script defer src="js/taste-atlas-field-data.js?v=7"></script>
+<script defer src="js/taste-atlas-field-data.js?v=8"></script>
 <script defer src="js/taste-atlas-map.js?v=7"></script>
 <script defer src="js/taste-atlas-experiments.js?v=7"></script>
 <script defer src="js/taste-atlas-lab.js?v=7"></script>
 <script defer src="js/taste-atlas-compare.js?v=6"></script>
-<script defer src="js/taste-atlas.js?v=7"></script>
-<script type="module" src="js/taste-atlas-dish.js?v=1"></script>
+<script defer src="js/taste-atlas.js?v=8"></script>
+<script type="module" src="js/taste-atlas-dish.js?v=2"></script>
 </head>
 <body>
 <main class="wrap atlas">
@@ -58,6 +58,7 @@
     <a class="chip" href="#map" id="nav-map">07 · карта кухонь</a>
     <a class="chip" href="#experiments" id="nav-experiments">08 · эксперименты</a>
     <a class="chip" href="#dish" id="nav-dish">09 · журнал блюд</a>
+    <a class="chip vasilisa-tab" href="#dish/vasilisa-couscous" id="nav-vasilisa">◇ огонь василисы</a>
   </nav>
   <noscript>Для интерактивных карт включи JavaScript. Исследование и анимированные схемы доступны в Obsidian.</noscript>
   <section id="page-systems" aria-labelledby="systems-title">
@@ -308,21 +309,23 @@
       <div id="dish-links"></div>
       <div id="dish-contents" hidden>
         <div class="dish-workbench">
+          <section class="atlas-readout" id="dish-guide" aria-label="Живой сценарий" hidden></section>
           <section class="atlas-readout" aria-labelledby="dish-script-title">
             <h2 id="dish-script-title">сценарий у плиты</h2>
+            <figure class="dish-illustration" id="dish-illustration" hidden><img alt="" width="569" height="720"><figcaption></figcaption></figure>
             <small id="dish-audio-note"></small>
             <audio id="dish-audio" controls preload="none" aria-label="Озвученный сценарий блюда" hidden></audio>
             <details><summary>Текст озвучки</summary><p id="dish-transcript"></p></details>
             <ol id="dish-steps" class="dish-history"></ol>
             <p class="atlas-cue" id="dish-trial"></p>
           </section>
-          <section class="atlas-readout" aria-labelledby="dish-log-title">
+          <section class="atlas-readout" id="dish-chat" aria-labelledby="dish-log-title">
             <h2 id="dish-log-title">чат готовки</h2>
             <p>Заметки остаются в этом браузере. На HTTPS шеф получает вопрос, шаг блюда и недавние реплики шефа и пользователя.</p>
             <label class="dish-select">Готовка <select id="dish-run"></select></label>
             <ol id="dish-messages" class="dish-messages" aria-label="Сообщения готовки" aria-live="polite"></ol>
             <form id="dish-message-form" class="dish-form">
-              <label>Этап <select id="dish-stage"></select></label>
+              <label id="dish-stage-field">Этап <select id="dish-stage"></select></label>
               <label>Наблюдение или вопрос <textarea id="dish-message" rows="2" maxlength="500" required placeholder="Что изменилось на сковороде?"></textarea></label>
               <div class="atlas-choice">
                 <button class="chip" type="submit" value="note">записать</button>

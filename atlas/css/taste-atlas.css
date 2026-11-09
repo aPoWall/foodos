@@ -356,3 +356,23 @@
 .dish-ingredient-art :is(svg,img){width:100%;height:64px;object-fit:contain}
 .dish-ingredients figcaption{font-size:11px;line-height:1.35;overflow-wrap:anywhere}
 @media(max-width:780px){.dish-workbench{grid-template-columns:1fr}}
+
+.atlas .vasilisa-tab{--ember:#a34726;border-color:var(--ember);box-shadow:inset 3px 0 var(--ember)}
+.atlas .vasilisa-tab:is([aria-current="page"],[aria-pressed="true"]){
+  background:#34170f;color:#fff4ee;border-color:#a34726;box-shadow:inset 3px 0 #ef966c
+}
+.is-guided #dish-chat{grid-column:1/-1}
+.dish-illustration{margin:0;display:flex;gap:12px;align-items:center;font-size:11px}
+.dish-illustration img{width:54px;height:auto;border:var(--frame) solid var(--soft);border-radius:var(--radius)}
+#dish-guide{border-top:3px solid #a34726}
+.guide-origin{padding:9px 10px;border-left:2px solid var(--soft);background:var(--wash);width:100%}
+.guide-origin.is-ayurvedic{border-left-color:#a34726;background:#fff1e8;color:#34170f}
+:root.dark .guide-origin.is-ayurvedic{background:#34170f;color:#fff4ee}
+.guide-origin p{margin:4px 0;font-size:13px}
+.guide-clock{font-size:clamp(32px,6vw,50px);line-height:1.1;font-variant-numeric:tabular-nums}
+#dish-guide progress{width:100%;accent-color:#a34726}
+.guide-step{display:block;padding:4px 6px;width:100%;text-align:left;border:0;background:transparent;color:inherit;font:inherit;cursor:pointer}
+.guide-step[aria-current="step"]{border-radius:var(--radius);background:var(--ink);color:var(--paper)}
+.guide-step+small{padding:4px 6px 0}
+.guide-step+.guide-rasa{color:#8b3d20;font-weight:600}
+:root.dark .guide-step+.guide-rasa{color:#f0a582}

@@ -137,6 +137,7 @@ const routeButtons = routes.map((route, i) => control(route.label, () => {
   history.replaceState(null,'','#systems/'+route.id);
   renderRoute();
 }));
+routeButtons[routes.findIndex(route => route.id === 'vasilisa-couscous')].classList.add('vasilisa-tab');
 $atlas('route-choices').append(...routeButtons);
 
 function renderRoute(nodeIndex = -1) {
@@ -524,11 +525,14 @@ function setPage() {
   stopWater();
   const [requested, key, subsection] = location.hash.slice(1).split('/');
   const current = atlasPages.includes(requested) ? requested : 'systems';
+  const vasilisa = current === 'dish' && key === 'vasilisa-couscous';
   for (const id of atlasPages) {
     $atlas('page-' + id).hidden = id !== current;
-    if (id === current) $atlas('nav-' + id).setAttribute('aria-current', 'page');
+    if (id === current && !vasilisa) $atlas('nav-' + id).setAttribute('aria-current', 'page');
     else $atlas('nav-' + id).removeAttribute('aria-current');
   }
+  if (vasilisa) $atlas('nav-vasilisa').setAttribute('aria-current','page');
+  else $atlas('nav-vasilisa').removeAttribute('aria-current');
   if (current === 'library' && key) openCulture(key, subsection);
   if (current === 'systems') {
     routeIndex = Math.max(0,routes.findIndex(route => route.id === key));
