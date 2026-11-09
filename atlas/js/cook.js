@@ -4,6 +4,7 @@
 
 import * as S from "./store.js?v=19";
 import { voice } from "./voice.js?v=19";
+import { ingredientDrawing } from "./ingredient-art.js?v=1";
 import { mountCamera, toggleCamera, recognizeFrame, recognizeImageData, fileToImageData, captureFrame, camLive } from "./camera.js?v=19";
 
 const $ = (id) => document.getElementById(id);
@@ -51,6 +52,18 @@ function fillMeta() {
   $("stTotal").textContent = meal.total || "–";
   $("stampFig").innerHTML = `${S.esc(meal.fig || "fig.··")} · ${S.esc(meal.slug)} <small>schematic · foodos</small>`;
   document.title = `FoodOS · ${meal.title}`;
+  $("dishJournal").hash = "dish/" + encodeURIComponent(SLUG);
+
+  const illustration = meal.illustration;
+  if (illustration && /^assets\/[\w.-]+\.(jpg|png|webp)$/i.test(illustration.src)) {
+    const figure = $("mealIllustration");
+    const image = figure.querySelector("img");
+    image.src = illustration.src;
+    image.alt = illustration.alt || "";
+    figure.querySelector("b").textContent = illustration.caption || "";
+    figure.querySelector("small").textContent = illustration.credit || "";
+    figure.hidden = false;
+  }
 }
 
 function renderDeviceState() {
@@ -114,6 +127,17 @@ function renderSetup() {
     note.innerHTML = '<b>атлас · ветка воды</b><span>шаги и таймеры для кухонной пробы.</span><a class="chip mini" href="taste-atlas.html#water">← ветка воды</a>';
     return;
   }
+  if (meal.localOnly) {
+    const setupTitle = root.closest(".setup-sec")?.querySelector(".hd .t");
+    if (setupTitle) setupTitle.textContent = "инвентарь · подготовка";
+    if (!["localhost", "127.0.0.1", "::1"].includes(location.hostname)) {
+      for (const link of document.querySelectorAll('a[href="index.html"]')) link.href = "taste-atlas.html";
+    }
+    note.innerHTML = location.protocol === "https:"
+      ? "<b>карточка атласа</b><span>Шаги, рисунки и журнал доступны с телефона.</span>"
+      : "<b>локальная карточка</b><span>Шаги и таймеры доступны на Mac и по домашней Wi-Fi сети.</span>";
+    return;
+  }
   const liveUrl = `https://foodos-lula-camarao.netlify.app/cook.html?meal=${encodeURIComponent(SLUG)}`;
   const local = ["localhost", "127.0.0.1", "::1"].includes(location.hostname);
   const secure = window.isSecureContext;
@@ -133,7 +157,7 @@ function renderSetup() {
 function renderIngredients() {
   const root = $("ingArt");
   root.innerHTML = (meal.ingredients || []).map((i, n) => {
-    const art = builtInArt(i, String.fromCharCode(97 + n));
+    const art = ingredientDrawing(i) || builtInArt(i, String.fromCharCode(97 + n));
     return `<figure>${art}<figcaption>${S.esc(i.label)}</figcaption></figure>`;
   }).join("");
 }
@@ -141,6 +165,7 @@ function renderIngredients() {
 async function warmMealMetaphors() {
   const lib = S.getMetaphors();
   const targets = (meal.ingredients || [])
+    .filter(i => !ingredientDrawing(i))
     .map(i => (i.label || i.id || "").toLowerCase())
     .filter(Boolean)
     .filter(n => !lib[n])
@@ -251,7 +276,12 @@ const stripTtl = (s) => `${(s.ttl || "").split("·").pop().trim()}. ${s.lead}`;
 function currentStep() { return (meal.steps || []).find(s => s.t !== "split" && visible(s.t) && !done.has(s.id)) || null; }
 function markCurrent() {
   document.querySelectorAll("#steps .step").forEach(e => e.classList.remove("current"));
-  const c = currentStep(); if (c) { const el = document.querySelector(`.step[data-id="${c.id}"]`); if (el) el.classList.add("current"); }
+  const c = currentStep();
+  if (c) {
+    const el = document.querySelector(`.step[data-id="${c.id}"]`);
+    if (el) el.classList.add("current");
+  }
+  $("dishJournal").hash = "dish/" + encodeURIComponent(SLUG) + (c ? "/step-" + encodeURIComponent(c.id) : "");
   renderSeeds();
 }
 function sayStep(s) { if (!voice.on) { voice.set(true); syncVoice(); } voice.say(stripTtl(s), "step"); }

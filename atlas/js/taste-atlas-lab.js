@@ -21,6 +21,7 @@ function renderCultureProfile(item, tab) {
     choices.append(link);
   }
   const section = element('div', '', 'culture-section');
+  section.append(internalLink('#dish/' + item.id, 'сценарий · история · журнал →'));
   if (tab === 'example') {
     section.append(renderCultureExample(item));
     const dinners = tasteAtlas.fieldDinners.filter(dinner=>dinner.culture===item.id);

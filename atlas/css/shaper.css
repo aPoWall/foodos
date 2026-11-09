@@ -397,6 +397,13 @@ header.top .ctl{justify-self:end;display:flex;gap:8px;flex-wrap:wrap}
 .panel-sec>.hd .g{font-size:13px}
 .panel-sec>.bd{padding:12px}
 
+.meal-illustration{margin:0 0 16px;border:var(--frame) solid var(--ink);border-radius:var(--radius);
+  background:var(--paper);overflow:hidden;display:flex;align-items:center;gap:14px}
+.meal-illustration[hidden]{display:none}
+.meal-illustration img{display:block;width:102px;height:auto;flex:none;border-right:var(--frame) solid var(--soft)}
+.meal-illustration figcaption{padding:8px 12px 8px 0;font-size:13px;line-height:1.4}
+.meal-illustration small{display:block;color:var(--muted);font-size:10px;margin-top:6px}
+
 /* setup cards */
 .setup-sec{background:linear-gradient(180deg,var(--paper),var(--wash))}
 .setup-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}

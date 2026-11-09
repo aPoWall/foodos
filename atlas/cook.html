@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/shaper.css?v=19">
+<link rel="stylesheet" href="css/shaper.css?v=20">
 </head>
 <body>
 
@@ -111,6 +111,7 @@
     <div class="ctl">
       <a class="chip" href="./#experiments">↩ system</a>
       <button class="chip" id="focusChip">▶ готовка</button>
+      <a class="chip" id="dishJournal" href="./#dish">журнал блюда</a>
       <button class="chip" id="voiceChip">voice · <span class="k">off</span></button>
       <button class="chip" id="camChip">cam · <span class="k">off</span></button>
       <button class="chip" id="themeChip">theme · <span class="k">light</span></button>
@@ -129,6 +130,10 @@
   <div class="layout">
     <!-- instrument column -->
     <div class="col-panel">
+      <figure class="meal-illustration" id="mealIllustration" hidden>
+        <img alt="" width="569" height="720">
+        <figcaption><b></b><small></small></figcaption>
+      </figure>
       <div class="panel-sec setup-sec">
         <div class="hd"><span class="t">bath kit · сборка</span><span class="g">◌</span></div>
         <div class="bd">
@@ -221,6 +226,6 @@
   </div>
 </div>
 
-<script type="module" src="js/cook.js?v=19"></script>
+<script type="module" src="js/cook.js?v=21"></script>
 </body>
 </html>

@@ -89,14 +89,15 @@ function openAtlasMap(tab,id) {
 
 function refreshPersonalPoints() {
   for (const point of mapPoints.splice(builtInPointCount)) pointsById.delete(point.id);
-  const entries = fieldMounted ? fieldLog : getFieldLog();
+  const entries = fieldMounted && !storageAvailable ? fieldLog : getFieldLog();
   for (const item of entries.filter(entry=>entry.map && entry.status!=='archived')) {
     const point = {id:'log-'+item.id,name:item.name,culture:item.map.culture,axis:item.map.axis,
-      reason:item.result || item.baseline || 'Личная версия из журнала экспериментов.'};
+      reason:item.result || item.baseline || 'Личная версия из журнала экспериментов.',
+      dish:item.dish, run:item.id};
     pointsById.set(point.id,point);
     mapPoints.push(point);
   }
-  if (mapState.points.some(id=>!pointsById.has(id))) mapState.points=tasteAtlas.fieldDinners.map(item=>item.id);
+  if (mapState.points.some(id=>!pointsById.has(id))) mapState.points=tasteAtlas.fieldDinners.slice(0,2).map(item=>item.id);
   for (const id of ['space-a','space-b']) {
     $atlas(id).replaceChildren(...mapPoints.map((point,i)=>selectOption(
       (i>=builtInPointCount ? 'Моя проба · ' : '')+point.name,point.id)));
@@ -250,6 +251,10 @@ function renderSpace() {
     point.axis.forEach((value,i)=>axes.append(element('dt',mapAxes[i]+' · '+value+'/4'),element('dd',axisLegends[i][value])));
     const actions = element('div','','atlas-choice');
     actions.append(internalLink('#library/'+point.culture+'/example','открыть пример →'));
+    if (point.dish || !point.run) {
+      const route = '#dish/'+(point.dish || point.meal || point.culture)+(point.dish ? '/'+point.run : '');
+      actions.append(internalLink(route,'сценарий и журнал →'));
+    }
     if (point.meal) {
       const recipe = element('a','готовить по шагам →','chip');
       recipe.href = 'cook.html?meal='+point.meal;

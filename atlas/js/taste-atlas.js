@@ -134,6 +134,7 @@ const routeGraph = setupGraph($atlas('route-graph'), nodes, graphPoints, 'вку
 const routeButtons = routes.map((route, i) => control(route.label, () => {
   stopRoute();
   routeIndex = i;
+  history.replaceState(null,'','#systems/'+route.id);
   renderRoute();
 }));
 $atlas('route-choices').append(...routeButtons);
@@ -148,7 +149,8 @@ function renderRoute(nodeIndex = -1) {
     const title = nodes.find(item => item.id === id).title;
     steps.append(element('li', (i + 1) + ' ' + title, id === node?.id ? 'current' : ''));
   });
-  renderReadout($atlas('route-detail'), {
+  const readout = $atlas('route-detail');
+  renderReadout(readout, {
     tag: node ? 'операция ' + String(nodeIndex + 1).padStart(2, '0') : 'маршрут 0' + (routeIndex + 1),
     title: node?.title ?? route.name,
     text: node?.text ?? route.text,
@@ -156,6 +158,10 @@ function renderRoute(nodeIndex = -1) {
     sources: node?.sources ?? route.sources,
     steps,
   });
+  const links = element('div','','atlas-choice');
+  links.append(internalLink('#dish/'+route.id,'сценарий · аудио · журнал →'));
+  if (worldById.has(route.id)) links.append(internalLink('#library/'+route.id,'культура →'));
+  readout.append(links);
 }
 
 const stopRoute = player($atlas('route-play'), '▷ проиграть маршрут',
@@ -503,14 +509,14 @@ for (const meal of tasteAtlas.waterMeals) {
   const link = element('a', 'открыть трекер ↗', 'chip');
   link.href = 'cook.html?meal=' + meal.slug;
   box.append(element('div', meal.operation, 'atlas-kicker'), element('h2', meal.name),
-    element('p', meal.summary), link, sourceLinks([meal.source]));
+    element('p', meal.summary), link, internalLink('#dish/'+meal.slug,'сценарий и журнал →'),sourceLinks([meal.source]));
   $atlas('water-meals').append(box);
 }
 
 renderAyurvedaBridges();
 renderAyurvedaChapters();
 renderOperationIndex();
-const atlasPages = ['systems','ayurveda','library','compose','water','compare','map','experiments'];
+const atlasPages = ['systems','ayurveda','library','compose','water','compare','map','experiments','dish'];
 let activeAtlasPage;
 function setPage() {
   stopRoute();
@@ -524,6 +530,10 @@ function setPage() {
     else $atlas('nav-' + id).removeAttribute('aria-current');
   }
   if (current === 'library' && key) openCulture(key, subsection);
+  if (current === 'systems') {
+    routeIndex = Math.max(0,routes.findIndex(route => route.id === key));
+    renderRoute();
+  }
   if (current === 'compare') openComparison(key);
   if (current === 'ayurveda' && key) {
     openAyurvedaChapter(key);

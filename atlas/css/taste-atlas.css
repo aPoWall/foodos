@@ -324,3 +324,35 @@
 .field-log form .field-check{display:flex;align-items:center;gap:7px}
 .field-log .field-check input{width:18px;min-height:18px;accent-color:var(--ink)}
 .field-form-axes{grid-template-columns:repeat(3,minmax(0,1fr))}
+
+/* Dish scenario and its experiment log use the same atlas panels. */
+.dish-select{display:grid;gap:5px;font-size:11px;max-width:460px}
+.dish-select select,.dish-form :is(select,textarea){width:100%;min-width:0;min-height:34px;
+  border:var(--frame) solid var(--soft);border-radius:var(--radius);padding:7px 8px;
+  background:var(--wash);color:var(--ink);font:inherit}
+.dish-workbench{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:12px;margin:14px 0;align-items:start}
+.dish-workbench audio{display:block;width:100%;min-height:44px}
+.dish-workbench details,.dish-form,.dish-form label{display:grid;width:100%;gap:7px}
+.dish-workbench details summary{cursor:pointer;font-size:12px}
+.dish-workbench details[open] summary{margin-bottom:8px}
+.dish-form{gap:9px}
+.dish-form label{font-size:12px}
+.dish-form textarea{resize:vertical;line-height:1.45}
+.dish-form .field-check{display:flex;gap:8px;align-items:flex-start}
+.dish-history,.dish-messages{list-style:none;margin:0;padding:0;width:100%;display:grid;gap:8px}
+.dish-history>li,.dish-message{padding:10px;border:var(--frame) solid var(--soft);border-radius:var(--radius);background:var(--wash);overflow-wrap:anywhere}
+.dish-history b,.dish-history small,.dish-message small{display:block}
+.dish-history p,.dish-message p{margin:5px 0;font-size:13px;white-space:pre-wrap}
+.dish-history li .chip{margin-top:6px}
+.dish-message.chef,.dish-message.guide{border-left:2px solid var(--ink)}
+.dish-message small,.dish-history small{font-size:11px;color:var(--muted)}
+.dish-messages{max-height:310px;overflow:auto;padding:2px}
+.dish-section{border-top:var(--frame) solid var(--soft);margin-top:18px;padding-top:10px}
+.dish-section h2{font-size:clamp(18px,2.1vw,25px);margin:0 0 9px}
+.dish-section .atlas-choice{margin-top:10px}
+.dish-ingredients{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:8px}
+.dish-ingredients figure{margin:0;padding:7px;border:var(--frame) solid var(--soft);border-radius:var(--radius);background:var(--wash);text-align:center}
+.dish-ingredient-art{display:grid;place-items:center;min-height:64px}
+.dish-ingredient-art :is(svg,img){width:100%;height:64px;object-fit:contain}
+.dish-ingredients figcaption{font-size:11px;line-height:1.35;overflow-wrap:anywhere}
+@media(max-width:780px){.dish-workbench{grid-template-columns:1fr}}

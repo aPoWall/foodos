@@ -6,39 +6,40 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#f6f8f7">
 <title>FoodOS · атлас вкуса</title>
-<meta name="description" content="Атлас FoodOS. Граф 21 кухни, 23 блюда в 3D, журнал экспериментов, два мясных ужина на гхи и алхимический комбайн.">
+<meta name="description" content="Атлас FoodOS. 21 культура и карта традиций, 27 озвученных сценариев, рисунки ингредиентов, чат готовки и журнал экспериментов.">
 <link rel="canonical" href="https://foodos-lula-camarao.netlify.app/atlas/">
 <meta property="og:type" content="website">
 <meta property="og:title" content="FoodOS · атлас вкуса">
-<meta property="og:description" content="21 профиль кухонь, девять глав об аюрведической кулинарии и алхимический комбайн для сборки проб из 38 операций.">
+<meta property="og:description" content="Атлас FoodOS. 21 культура и карта традиций, 27 озвученных сценариев, рисунки ингредиентов, чат готовки и журнал экспериментов.">
 <meta property="og:url" content="https://foodos-lula-camarao.netlify.app/atlas/">
-<meta property="og:image" content="https://foodos-lula-camarao.netlify.app/atlas/assets/taste-atlas-cover-v4.png?v=6">
+<meta property="og:image" content="https://foodos-lula-camarao.netlify.app/atlas/assets/taste-atlas-cover-v5.png?v=7">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="FoodOS · 3D-карта по воде, жиру и времени и два мясных эксперимента.">
+<meta property="og:image:alt" content="FoodOS · граф операций вкуса, 21 культура, озвученные сценарии и чат готовки.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="FoodOS · атлас вкуса">
-<meta name="twitter:description" content="21 профиль кухонь, девять глав об аюрведической кулинарии и алхимический комбайн для сборки проб из 38 операций.">
-<meta name="twitter:image" content="https://foodos-lula-camarao.netlify.app/atlas/assets/taste-atlas-cover-v4.png?v=6">
-<meta name="twitter:image:alt" content="FoodOS · 3D-карта по воде, жиру и времени и два мясных эксперимента.">
+<meta name="twitter:description" content="Атлас FoodOS. 21 культура и карта традиций, 27 озвученных сценариев, рисунки ингредиентов, чат готовки и журнал экспериментов.">
+<meta name="twitter:image" content="https://foodos-lula-camarao.netlify.app/atlas/assets/taste-atlas-cover-v5.png?v=7">
+<meta name="twitter:image:alt" content="FoodOS · граф операций вкуса, 21 культура, озвученные сценарии и чат готовки.">
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/shaper.css?v=19">
-<link rel="stylesheet" href="css/taste-atlas.css?v=6">
-<script defer src="js/taste-atlas-data.js?v=3"></script>
+<link rel="stylesheet" href="css/taste-atlas.css?v=7">
+<script defer src="js/taste-atlas-data.js?v=7"></script>
 <script defer src="js/taste-atlas-water.js?v=3"></script>
 <script defer src="js/taste-atlas-research.js?v=4"></script>
 <script defer src="js/taste-atlas-cultures.js?v=5"></script>
 <script defer src="js/taste-atlas-alchemy.js?v=5"></script>
-<script defer src="js/taste-atlas-field-data.js?v=6"></script>
-<script defer src="js/taste-atlas-map.js?v=6"></script>
-<script defer src="js/taste-atlas-experiments.js?v=6"></script>
-<script defer src="js/taste-atlas-lab.js?v=6"></script>
+<script defer src="js/taste-atlas-field-data.js?v=7"></script>
+<script defer src="js/taste-atlas-map.js?v=7"></script>
+<script defer src="js/taste-atlas-experiments.js?v=7"></script>
+<script defer src="js/taste-atlas-lab.js?v=7"></script>
 <script defer src="js/taste-atlas-compare.js?v=6"></script>
-<script defer src="js/taste-atlas.js?v=6"></script>
+<script defer src="js/taste-atlas.js?v=7"></script>
+<script type="module" src="js/taste-atlas-dish.js?v=1"></script>
 </head>
 <body>
 <main class="wrap atlas">
@@ -56,11 +57,12 @@
     <a class="chip" href="#compare" id="nav-compare">06 · сравнить кухни</a>
     <a class="chip" href="#map" id="nav-map">07 · карта кухонь</a>
     <a class="chip" href="#experiments" id="nav-experiments">08 · эксперименты</a>
+    <a class="chip" href="#dish" id="nav-dish">09 · журнал блюд</a>
   </nav>
   <noscript>Для интерактивных карт включи JavaScript. Исследование и анимированные схемы доступны в Obsidian.</noscript>
   <section id="page-systems" aria-labelledby="systems-title">
     <div class="atlas-primary">
-      <div class="atlas-caption"><span>FIG.T01 · COOKING SYSTEMS</span><span>04 МАРШРУТА</span></div>
+      <div class="atlas-caption"><span>FIG.T01 · COOKING SYSTEMS</span><span>05 МАРШРУТОВ</span></div>
       <h1 id="systems-title">как кухни собирают вкус</h1>
       <p class="atlas-lead">Выбери блюдо, чтобы увидеть его маршрут. Нажми на узел, чтобы разобрать приём.</p>
       <div class="atlas-controls">
@@ -72,6 +74,11 @@
         <div class="atlas-readout" id="route-detail" aria-live="polite"></div>
       </div>
     </div>
+    <aside class="atlas-aside">
+      <div class="seclab">от карты к своей тарелке</div>
+      <p>Открой блюдо из графа. Послушай сценарий, разложи ингредиенты и посмотри, где и как готовят эту версию. По ходу готовки записывай изменения в чате, а после сравни две ложки и добавь результат в журнал экспериментов.</p>
+      <div class="atlas-choice"><a class="chip" href="#dish/vasilisa-couscous">огонь василисы →</a><a class="chip" href="#ayurveda">шесть rasa →</a><a class="chip" href="#map/network">связи кухонь →</a></div>
+    </aside>
     <aside class="atlas-aside">
       <div class="seclab">⌬ как считывать вкус</div>
       <p>В современном сенсорном описании есть как минимум пять основных вкусов, включая умами. Запах, жжение, температура и текстура тоже меняют впечатление от тарелки. Граф сравнивает приёмы на конкретных блюдах.</p>
@@ -251,7 +258,7 @@
     <div class="atlas-primary">
       <div class="atlas-caption"><span>FIG.T08 · FIELD EXPERIMENTS</span><span>02 УЖИНА / A·B</span></div>
       <h1 id="experiments-title">кухонные эксперименты</h1>
-      <p class="atlas-lead">Два ужина в аюрведической кулинарной логике. У каждого есть график готовки, трекер, гипотеза и одна переменная для сравнения.</p>
+      <p class="atlas-lead">Три домашних пробы со специями в гхи. У каждой есть график готовки, трекер, гипотеза и одна переменная для сравнения.</p>
       <div id="dinner-options" class="atlas-choice field-switch" aria-label="Выбор ужина"></div>
       <div id="dinner-detail" class="atlas-readout field-detail"></div>
       <p><a class="atlas-source" href="assets/atlas-dinners.gif">расписания двух ужинов в GIF →</a></p>
@@ -292,7 +299,62 @@
       </div>
     </div>
   </section>
-  <footer class="atlas-footer">FOODOS / KNOWLEDGE / 08.11.2026 <span>●</span></footer>
+  <section id="page-dish" aria-labelledby="dish-title" hidden>
+    <div class="atlas-primary">
+      <div class="atlas-caption"><span>FIG.T09 · COOKING LOG</span><span>FOODOS</span></div>
+      <label class="dish-select">Блюдо <select id="dish-picker"></select></label>
+      <h1 id="dish-title">сценарий и журнал блюда</h1>
+      <p class="atlas-lead" id="dish-summary"></p>
+      <div id="dish-links"></div>
+      <div id="dish-contents" hidden>
+        <div class="dish-workbench">
+          <section class="atlas-readout" aria-labelledby="dish-script-title">
+            <h2 id="dish-script-title">сценарий у плиты</h2>
+            <small id="dish-audio-note"></small>
+            <audio id="dish-audio" controls preload="none" aria-label="Озвученный сценарий блюда" hidden></audio>
+            <details><summary>Текст озвучки</summary><p id="dish-transcript"></p></details>
+            <ol id="dish-steps" class="dish-history"></ol>
+            <p class="atlas-cue" id="dish-trial"></p>
+          </section>
+          <section class="atlas-readout" aria-labelledby="dish-log-title">
+            <h2 id="dish-log-title">чат готовки</h2>
+            <p>Заметки остаются в этом браузере. На HTTPS шеф получает вопрос, шаг блюда и недавние реплики шефа и пользователя.</p>
+            <label class="dish-select">Готовка <select id="dish-run"></select></label>
+            <ol id="dish-messages" class="dish-messages" aria-label="Сообщения готовки" aria-live="polite"></ol>
+            <form id="dish-message-form" class="dish-form">
+              <label>Этап <select id="dish-stage"></select></label>
+              <label>Наблюдение или вопрос <textarea id="dish-message" rows="2" maxlength="500" required placeholder="Что изменилось на сковороде?"></textarea></label>
+              <div class="atlas-choice">
+                <button class="chip" type="submit" value="note">записать</button>
+                <button class="chip" type="submit" value="question">спросить шефа</button>
+              </div>
+            </form>
+            <details class="dish-format">
+              <summary>Формат опыта · A/B, результат и карта</summary>
+              <form id="dish-format" class="dish-form">
+                <label>Что оставляю в A <textarea name="baseline" maxlength="650" rows="2"></textarea></label>
+                <label>Что меняю в B <textarea name="variable" maxlength="650" rows="2"></textarea></label>
+                <label>Что получилось <textarea name="result" maxlength="2000" rows="2"></textarea></label>
+                <label>Статус <select name="status"><option value="planned">запланирован</option><option value="cooking">готовлю</option><option value="done">готово</option><option value="archived">архив</option></select></label>
+                <label class="field-check"><input type="checkbox" name="mapEnabled"> Добавить точку с исходными шкалами блюда</label>
+                <div class="atlas-choice"><button class="chip" type="submit">сохранить опыт</button><a class="atlas-source" id="dish-log-map" hidden>своя точка в 3D →</a></div>
+              </form>
+            </details>
+            <small id="dish-status" role="status"></small>
+          </section>
+        </div>
+        <section class="dish-section" aria-labelledby="dish-ingredients-title">
+          <h2 id="dish-ingredients-title">ингредиенты · визуальная полка</h2>
+          <div class="dish-ingredients" id="dish-ingredients"></div>
+        </section>
+        <section class="dish-section" aria-labelledby="dish-tradition-title">
+          <h2 id="dish-tradition-title">карта традиции</h2>
+          <div id="dish-traditions"></div>
+        </section>
+      </div>
+    </div>
+  </section>
+  <footer class="atlas-footer">FOODOS / KNOWLEDGE / 09.11.2026 <span>●</span></footer>
 </main>
 </body>
 </html>

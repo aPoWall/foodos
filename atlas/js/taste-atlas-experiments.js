@@ -26,7 +26,14 @@ function cleanExperiment(raw) {
     map.axis.every(value=>Number.isInteger(value)&&value>=0&&value<=4) ? {culture:map.culture,axis:map.axis.slice()} : null;
   return {id,name,date,updated,dinner:knownDinner.has(raw.dinner)?raw.dinner:'',
     status:Object.hasOwn(logStages,raw.status)?raw.status:'planned',
-    baseline:text('baseline',650),variable:text('variable',650),result:text('result',2000),map:point};
+    baseline:text('baseline',650),variable:text('variable',650),result:text('result',2000),map:point,
+    dish:/^[\w-]{1,80}$/.test(text('dish',80)) ? text('dish',80) : '',
+    messages:Array.isArray(raw.messages) ? raw.messages.slice(0,40).flatMap(message => {
+      if (!message || !['note','question','chef','guide'].includes(message.role) ||
+          typeof message.text !== 'string' || typeof message.at !== 'string' || !Number.isFinite(Date.parse(message.at))) return [];
+      return [{role:message.role,text:message.text.trim().slice(0,500),at:message.at.slice(0,30),
+        stage:typeof message.stage === 'string' ? message.stage.slice(0,100) : ''}];
+    }) : []};
 }
 
 function getFieldLog() {
@@ -47,6 +54,15 @@ function saveFieldLog() {
   }
 }
 
+function writeDishLog(entry) {
+  fieldLog = getFieldLog();
+  const clean = cleanExperiment({...entry,updated:new Date().toISOString()});
+  if (!clean || (fieldLog.length >= 300 && !fieldLog.some(item => item.id === clean.id))) return null;
+  fieldLog = [...fieldLog.filter(item => item.id !== clean.id), clean];
+  saveFieldLog();
+  return storageAvailable ? clean : null;
+}
+
 function statusExperiment(message) {
   $atlas('experiment-status').textContent = storageAvailable ? message :
     message+' Хранилище браузера недоступно, скачай JSON, пока страница открыта.';
@@ -54,8 +70,10 @@ function statusExperiment(message) {
 
 function openFieldLab(slug) {
   if (!fieldMounted) mountFieldLab();
+  fieldLog = getFieldLog();
   if (knownDinner.has(slug)) fieldDinner = slug;
   renderDinners();
+  renderFieldLog();
 }
 
 function mountFieldLab() {
@@ -82,7 +100,9 @@ function mountFieldLab() {
     const values = Object.fromEntries(new FormData(event.currentTarget));
     const id = editingExperiment?.id ?? globalThis.crypto?.randomUUID?.() ?? 'e-'+Date.now()+'-'+Math.random().toString(36).slice(2,8);
     const map = values.mapEnabled ? {culture:values.mapCulture,axis:[values.mapWater,values.mapFat,values.mapTime].map(Number)} : null;
-    const entry = cleanExperiment({...values,id,map,updated:new Date().toISOString(),dinner:editingExperiment?.dinner});
+    fieldLog = getFieldLog();
+    const current = fieldLog.find(item => item.id === id);
+    const entry = cleanExperiment({...current,...values,id,map,updated:new Date().toISOString(),dinner:editingExperiment?.dinner});
     if (!entry) return statusExperiment('Проверь название и дату.');
     if (!editingExperiment && fieldLog.length >= 300) return statusExperiment('Журнал содержит 300 записей. Скачай копию и используй импорт для переноса.');
     fieldLog = [...fieldLog.filter(item=>item.id!==id),entry];
@@ -109,12 +129,12 @@ function mountFieldLab() {
     const file = input.files[0];
     if (!file) return;
     try {
-      if (file.size > 2_000_000) throw Error();
+      if (file.size > 12_000_000) throw Error();
       const value = JSON.parse(await file.text());
       if (value.version !== 1 || !Array.isArray(value.entries) || value.entries.length > 300) throw Error();
       const incoming = value.entries.map(cleanExperiment);
       if (incoming.some(entry=>!entry)) throw Error();
-      const merged = new Map(fieldLog.map(entry=>[entry.id,entry]));
+      const merged = new Map(getFieldLog().map(entry=>[entry.id,entry]));
       for (const entry of incoming) {
         const prior = merged.get(entry.id);
         if (!prior || Date.parse(prior.updated)<Date.parse(entry.updated)) merged.set(entry.id,entry);
@@ -169,7 +189,7 @@ function renderDinners() {
   const track = element('a','открыть трекер →','chip');
   track.href = 'cook.html?meal='+dinner.id;
   const actions = element('div','','atlas-choice');
-  actions.append(track,internalLink('#map/space/'+dinner.id,'найти в 3D →'),
+  actions.append(track,internalLink('#dish/'+dinner.id,'сценарий и журнал →'),internalLink('#map/space/'+dinner.id,'найти в 3D →'),
     control('＋ запланировать опыт',()=>pickExperiment({name:dinner.name,dinner:dinner.id,variable:dinner.variable,
       baseline:dinner.hypothesis,status:'planned'})));
   $atlas('dinner-detail').replaceChildren(element('div',dinner.time+' / АКТИВНО '+dinner.active+' / '+dinner.fat,'atlas-kicker'),
@@ -197,6 +217,7 @@ function renderFieldLog() {
         if (item[key]) card.append(dossierSection(title,item[key]));
       }
       card.append(control('открыть запись',()=>pickExperiment(item)));
+      if (item.dish) card.append(internalLink('#dish/'+item.dish+'/'+item.id,'чат и шаги →','atlas-source'));
       if (item.map && item.status !== 'archived') card.append(internalLink('#map/space/log-'+item.id,'своя точка в 3D →','atlas-source'));
       group.append(card);
     }
